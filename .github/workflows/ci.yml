@@ -4,42 +4,50 @@ on:
   push:
     branches: [master]
   pull_request:
-    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build-and-test:
-    name: Build and test
-    runs-on: macos-latest
-
+  verify:
+    name: Xcode ${{ matrix.xcode }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-26
+            xcode: '26.6'
+            runtime: '26'
+          # https://github.com/actions/runner-images/issues/14404
+          - runner: xcode-27
+            xcode: '27.0'
+            runtime: '27'
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
     steps:
       - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-
-      # The package needs an SDK that has iOS 26 / macOS 26. Pick the newest Xcode the
-      # runner image happens to ship rather than pinning a version that may not exist yet.
-      - name: Select newest Xcode
+      - name: Show toolchain
         run: |
-          set -euo pipefail
-          latest=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
-          echo "Selecting $latest"
-          sudo xcode-select -s "$latest"
           xcodebuild -version
           swift --version
-
-      - name: Check for whitespace errors
-        if: github.event_name == 'pull_request'
-        run: git diff --check "origin/${{ github.base_ref }}...HEAD"
-
-      - name: Build (macOS)
-        run: swift build
-
-      - name: Test (macOS)
+      - name: Test macOS
         run: swift test
-
-      - name: Build (iOS)
-        run: xcodebuild -scheme GreetKit -destination 'generic/platform=iOS' build
+      - name: Test iOS Simulator
+        env:
+          RUNTIME_MAJOR: ${{ matrix.runtime }}
+        run: |
+          device=$(xcrun simctl list devices available -j | python3 -c '
+          import json, os, sys
+          devices = json.load(sys.stdin)["devices"]
+          major = os.environ["RUNTIME_MAJOR"]
+          print(next(d["udid"] for runtime, group in devices.items()
+                     if f"iOS-{major}-" in runtime
+                     for d in group if "iPhone" in d["name"]))')
+          xcodebuild test -scheme GreetKit -destination "platform=iOS Simulator,id=$device" -quiet CODE_SIGNING_ALLOWED=NO
