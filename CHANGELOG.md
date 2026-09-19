@@ -6,6 +6,10 @@ All notable changes to GreetKit are recorded here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Back navigation and Command-[ in setup routes, with consumer-localized copy and VoiceOver focus restoration.
+
 ### Fixed
 
 - Route actions share the loading state, and pending or failed completion retains the final step for retry.

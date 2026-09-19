@@ -113,6 +113,9 @@ public struct GreetView<Content: GreetContent>: View {
                         index: activeRoute.index,
                         count: self.content.primaryRoutes.count,
                         isLoading: self.isLoading,
+                        onBack: {
+                            self.routeState.retreat(in: self.content.primaryRoutes, isLoading: self.isLoading)
+                        },
                         onNext: {
                             self.routeState.advance(
                                 after: activeRoute.index,
@@ -260,28 +263,44 @@ private struct GreetPrimaryRouteDestinationContainer<Content: GreetContent, Dest
     let index: Int
     let count: Int
     let isLoading: Bool
+    let onBack: () -> Void
     let onNext: () -> Void
     let onDone: () -> Void
 
     @State private var containerWidth: CGFloat = Tokens.Platform.assumedContainerWidth
 
+    @AccessibilityFocusState(for: .voiceOver) private var destinationFocused: Bool
+
     var body: some View {
         self.destination
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .accessibilityElement(children: .contain)
+            .accessibilityFocused(self.$destinationFocused)
+            .onAppear { self.destinationFocused = true }
             .safeAreaBar(edge: .bottom) {
-                GreetPrimaryButton(
-                    label: self.primaryButtonText,
-                    loading: .init(
-                        isLoading: self.isLoading,
-                        accessibilityValue: self.content.primaryButtonLoadingAccessibilityValue),
-                    action: {
-                        self.isLastRoute ? self.onDone() : self.onNext()
-                    })
-                    .frame(maxWidth: Tokens.Layout.contentMaxWidth)
-                    .greetHorizontalPadding(containerWidth: self.containerWidth)
-                    .padding(.top, Tokens.Layout.footerTopPadding)
-                    .padding(.bottom, Tokens.Layout.footerBottomPadding)
-                    .frame(maxWidth: .infinity)
+                HStack(spacing: Tokens.Layout.footerControlSpacing) {
+                    Button(action: self.onBack) {
+                        self.content.primaryRouteBackButtonText
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.large)
+                    .keyboardShortcut("[", modifiers: .command)
+                    .disabled(self.isLoading)
+
+                    GreetPrimaryButton(
+                        label: self.primaryButtonText,
+                        loading: .init(
+                            isLoading: self.isLoading,
+                            accessibilityValue: self.content.primaryButtonLoadingAccessibilityValue),
+                        action: {
+                            self.isLastRoute ? self.onDone() : self.onNext()
+                        })
+                }
+                .frame(maxWidth: Tokens.Layout.contentMaxWidth)
+                .greetHorizontalPadding(containerWidth: self.containerWidth)
+                .padding(.top, Tokens.Layout.footerTopPadding)
+                .padding(.bottom, Tokens.Layout.footerBottomPadding)
+                .frame(maxWidth: .infinity)
             }
             .greetContainerWidth(self.$containerWidth)
             .greetSheetSizing()
@@ -299,6 +318,8 @@ private struct GreetPrimaryRouteDestinationContainer<Content: GreetContent, Dest
 private struct GreetHeaderSection<Content: GreetContent>: View {
     let content: Content
     let iconSize: CGFloat
+
+    @AccessibilityFocusState(for: .voiceOver) private var titleFocused: Bool
 
     var body: some View {
         VStack(spacing: Tokens.Spacing.large) {
@@ -325,6 +346,8 @@ private struct GreetHeaderSection<Content: GreetContent>: View {
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityAddTraits(.isHeader)
+                .accessibilityFocused(self.$titleFocused)
+                .onAppear { self.titleFocused = true }
 
             if let subtitle = self.content.subtitle {
                 subtitle

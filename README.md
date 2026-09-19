@@ -134,6 +134,12 @@ then dismiss from the consumer after success. On failure, set `errorMessage` and
 the final route stays available for retry. A synchronous completion with no loading or error
 returns to the overview as before.
 
+Back revisits the previous route, or the overview from the first route. Command-[ provides the
+same action with a keyboard. Keep destination form values in your app's state so they survive
+navigation. Override `primaryRouteBackButtonText` along with Next, Done, and the loading
+accessibility value for your app's locale. VoiceOver focus moves into each destination and
+returns to the welcome title when the overview reappears.
+
 GreetKit does not include a separate "next steps" card/list primitive. If the primary button should continue into setup, model that as a route chain; if the app needs additional cards, build them in the consuming app or in the destination views.
 
 ## Backgrounds

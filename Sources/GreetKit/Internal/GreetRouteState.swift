@@ -56,6 +56,13 @@ struct GreetRouteState: Equatable {
         self.activeRouteID = routes[nextIndex].id
     }
 
+    /// Returns to the previous step, or to the overview from the first step.
+    mutating func retreat(in routes: [GreetPrimaryRoute], isLoading: Bool = false) {
+        guard !isLoading, let active = self.activeRoute(in: routes) else { return }
+        self.transitionDirection = .backward
+        self.activeRouteID = active.index == 0 ? nil : routes[active.index - 1].id
+    }
+
     /// Returns to the overview unless the consumer is still completing setup or needs a retry.
     mutating func complete(isLoading: Bool = false, hasError: Bool = false) {
         guard !isLoading, !hasError else { return }

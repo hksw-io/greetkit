@@ -42,6 +42,8 @@ public protocol GreetContent {
     var features: [GreetFeatureItem] { get }
     var primaryRoutes: [GreetPrimaryRoute] { get }
     var primaryRouteNextButtonText: Text { get }
+    /// Label for returning to the previous route or welcome overview.
+    var primaryRouteBackButtonText: Text { get }
     var primaryRouteDoneButtonText: Text { get }
     var primaryButtonText: Text { get }
     var primaryButtonLoadingAccessibilityValue: Text { get }
@@ -55,6 +57,7 @@ public extension GreetContent {
     var subtitle: Text? { nil }
     var primaryRoutes: [GreetPrimaryRoute] { [] }
     var primaryRouteNextButtonText: Text { Text("Next") }
+    var primaryRouteBackButtonText: Text { Text("Back") }
     var primaryRouteDoneButtonText: Text { Text("Done") }
     var primaryButtonLoadingAccessibilityValue: Text { Text("Loading") }
     var skipButtonText: Text? { nil }

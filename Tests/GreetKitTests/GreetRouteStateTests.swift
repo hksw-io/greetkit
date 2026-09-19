@@ -37,6 +37,20 @@ struct GreetRouteStateTests {
     }
 
     @Test
+    func backRevisitsEarlierStepsAndReturnsToOverviewWithoutAdvancingWhileBusy() {
+        var state = GreetRouteState(activeRouteID: self.routes[1].id)
+        state.retreat(in: self.routes, isLoading: true)
+        #expect(state.activeRouteID == self.routes[1].id)
+        state.retreat(in: self.routes)
+        #expect(state.activeRouteID == self.routes[0].id)
+        #expect(state.transitionDirection == .backward)
+        state.retreat(in: self.routes)
+        #expect(state.activeRouteID == nil)
+        state.retreat(in: self.routes)
+        #expect(state.activeRouteID == nil)
+    }
+
+    @Test
     func beginOpensTheFirstRouteOfAChain() {
         var state = GreetRouteState()
 
