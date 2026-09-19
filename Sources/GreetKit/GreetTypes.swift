@@ -42,7 +42,7 @@ public protocol GreetContent {
     var features: [GreetFeatureItem] { get }
     var primaryRoutes: [GreetPrimaryRoute] { get }
     var primaryRouteNextButtonText: Text { get }
-    /// Label for returning to the previous route or welcome overview.
+    /// Accessible name and pointer help for the back chevron.
     var primaryRouteBackButtonText: Text { get }
     var primaryRouteDoneButtonText: Text { get }
     var primaryButtonText: Text { get }

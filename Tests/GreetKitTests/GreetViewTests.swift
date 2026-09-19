@@ -105,6 +105,7 @@ private struct RichContent: GreetContent {
     }
     var primaryButtonText: Text { Text("Get started") }
     var primaryRouteNextButtonText: Text { Text("Next step") }
+    var primaryRouteBackButtonText: Text { Text("Previous step") }
     var primaryRouteDoneButtonText: Text { Text("Finish") }
     var primaryButtonLoadingAccessibilityValue: Text { Text("Laddar") }
     var skipButtonText: Text? { Text("Skip") }

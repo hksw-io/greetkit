@@ -134,9 +134,10 @@ then dismiss from the consumer after success. On failure, set `errorMessage` and
 the final route stays available for retry. A synchronous completion with no loading or error
 returns to the overview as before.
 
-Back revisits the previous route, or the overview from the first route. Command-[ provides the
+The back chevron revisits the previous route, or the overview from the first route. Command-[ provides the
 same action with a keyboard. Keep destination form values in your app's state so they survive
-navigation. Override `primaryRouteBackButtonText` along with Next, Done, and the loading
+navigation. `primaryRouteBackButtonText` supplies its accessible name and pointer help; the
+visible control is an icon. Override it along with Next, Done, and the loading
 accessibility value for your app's locale. VoiceOver focus moves into each destination and
 returns to the welcome title when the overview reappears.
 

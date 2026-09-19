@@ -280,10 +280,21 @@ private struct GreetPrimaryRouteDestinationContainer<Content: GreetContent, Dest
             .safeAreaBar(edge: .bottom) {
                 HStack(spacing: Tokens.Layout.footerControlSpacing) {
                     Button(action: self.onBack) {
-                        self.content.primaryRouteBackButtonText
+                        Label {
+                            self.content.primaryRouteBackButtonText
+                        } icon: {
+                            Image(systemName: "chevron.backward")
+                        }
                     }
+                    .labelStyle(.iconOnly)
                     .buttonStyle(.bordered)
+                    .buttonBorderShape(.circle)
                     .controlSize(.large)
+                    .frame(
+                        minWidth: Tokens.Platform.minimumControlHeight,
+                        minHeight: Tokens.Platform.minimumControlHeight)
+                    .contentShape(Rectangle())
+                    .help(self.content.primaryRouteBackButtonText)
                     .keyboardShortcut("[", modifiers: .command)
                     .disabled(self.isLoading)
 
