@@ -43,7 +43,8 @@ struct GreetRouteState: Equatable {
     }
 
     /// Moves to the route following `index`, completing the chain when there is no route left.
-    mutating func advance(after index: Int, in routes: [GreetPrimaryRoute]) {
+    mutating func advance(after index: Int, in routes: [GreetPrimaryRoute], isLoading: Bool = false) {
+        guard !isLoading else { return }
         let nextIndex = index + 1
 
         guard routes.indices.contains(nextIndex) else {
@@ -55,8 +56,9 @@ struct GreetRouteState: Equatable {
         self.activeRouteID = routes[nextIndex].id
     }
 
-    /// Returns to the overview.
-    mutating func complete() {
+    /// Returns to the overview unless the consumer is still completing setup or needs a retry.
+    mutating func complete(isLoading: Bool = false, hasError: Bool = false) {
+        guard !isLoading, !hasError else { return }
         self.transitionDirection = .backward
         self.activeRouteID = nil
     }

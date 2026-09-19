@@ -128,6 +128,12 @@ For a simple welcome sheet, omit `primaryRoutes` and `primaryRouteDestination`. 
 
 For a setup flow, provide `primaryRoutes` and `primaryRouteDestination`. `onPrimary` fires first, then the library opens the first route with an in-sheet transition. Do not dismiss from `onPrimary` when using routes. Finish in `onPrimaryRoutesComplete` after the last route. `primaryRouteNextButtonText` and `primaryRouteDoneButtonText` customize the route controls. A single follow-up step is a chain of one — the button reads Done and the route completes the flow.
 
+`isLoading` also disables Next and Done and shows progress on the active route. If completion
+starts asynchronous work, set `isLoading = true` synchronously in `onPrimaryRoutesComplete`,
+then dismiss from the consumer after success. On failure, set `errorMessage` and clear loading;
+the final route stays available for retry. A synchronous completion with no loading or error
+returns to the overview as before.
+
 GreetKit does not include a separate "next steps" card/list primitive. If the primary button should continue into setup, model that as a route chain; if the app needs additional cards, build them in the consuming app or in the destination views.
 
 ## Backgrounds

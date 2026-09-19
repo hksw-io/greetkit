@@ -11,6 +11,23 @@ struct GreetRouteStateTests {
     ]
 
     @Test
+    func loadingBlocksAdvanceAndFailedCompletionKeepsTheFinalRouteForRetry() {
+        var state = GreetRouteState(activeRouteID: self.routes[0].id)
+        state.advance(after: 0, in: self.routes, isLoading: true)
+        #expect(state.activeRouteID == self.routes[0].id)
+        state.advance(after: 0, in: self.routes)
+        #expect(state.activeRouteID == self.routes[1].id)
+        state.advance(after: 1, in: self.routes)
+
+        state.complete(isLoading: true)
+        #expect(state.activeRouteID == self.routes.last?.id)
+        state.complete(hasError: true)
+        #expect(state.activeRouteID == self.routes.last?.id)
+        state.complete()
+        #expect(state.activeRouteID == nil)
+    }
+
+    @Test
     func startsOnTheOverview() {
         let state = GreetRouteState()
 

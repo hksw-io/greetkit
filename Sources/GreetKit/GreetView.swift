@@ -112,8 +112,12 @@ public struct GreetView<Content: GreetContent>: View {
                         destination: primaryRouteDestination(activeRoute.route),
                         index: activeRoute.index,
                         count: self.content.primaryRoutes.count,
+                        isLoading: self.isLoading,
                         onNext: {
-                            self.routeState.advance(after: activeRoute.index, in: self.content.primaryRoutes)
+                            self.routeState.advance(
+                                after: activeRoute.index,
+                                in: self.content.primaryRoutes,
+                                isLoading: self.isLoading)
                         },
                         onDone: self.completePrimaryRoutes)
                         .id("primary-route-\(activeRoute.route.id)")
@@ -178,6 +182,7 @@ public struct GreetView<Content: GreetContent>: View {
     }
 
     private func performPrimaryAction() {
+        guard !self.isLoading else { return }
         self.onPrimary()
 
         self.routeState.begin(
@@ -186,8 +191,9 @@ public struct GreetView<Content: GreetContent>: View {
     }
 
     private func completePrimaryRoutes() {
+        guard !self.isLoading else { return }
         self.onPrimaryRoutesComplete()
-        self.routeState.complete()
+        self.routeState.complete(isLoading: self.isLoading, hasError: self.errorMessage != nil)
     }
 
     private var routeTransition: AnyTransition {
@@ -253,6 +259,7 @@ private struct GreetPrimaryRouteDestinationContainer<Content: GreetContent, Dest
     let destination: Destination
     let index: Int
     let count: Int
+    let isLoading: Bool
     let onNext: () -> Void
     let onDone: () -> Void
 
@@ -264,6 +271,9 @@ private struct GreetPrimaryRouteDestinationContainer<Content: GreetContent, Dest
             .safeAreaBar(edge: .bottom) {
                 GreetPrimaryButton(
                     label: self.primaryButtonText,
+                    loading: .init(
+                        isLoading: self.isLoading,
+                        accessibilityValue: self.content.primaryButtonLoadingAccessibilityValue),
                     action: {
                         self.isLastRoute ? self.onDone() : self.onNext()
                     })
@@ -406,8 +416,7 @@ private struct GreetFeatureRow: View {
 /// high-contrast treatments all come from the platform. The surrounding `GreetView` applies
 /// `GreetStyle.tint`, which is what colours the button.
 ///
-/// Pass `loading` only where the button can actually enter a loading state; route
-/// destinations leave it `nil` so no progress affordance is built at all.
+/// The overview and route controls share the consumer's loading state.
 private struct GreetPrimaryButton: View {
     struct Loading {
         let isLoading: Bool
