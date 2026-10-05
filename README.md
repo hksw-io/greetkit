@@ -178,7 +178,7 @@ Built-in options:
 
 Destination views can still draw their own backgrounds. If they do, that local destination background appears above the GreetKit background.
 
-Every background spans behind the pinned footer and button area, including `.system`. Scroll indicators are hidden on iOS, where a swipe and the scroll edge effect already say the content continues, and left to the system on macOS, where the scroller is how a window tells you there is more below.
+Every background spans behind the pinned footer and button area, including `.system`. Scroll indicators are hidden on iOS, where a swipe and the fade above the footer already say the content continues, and left to the system on macOS, where the scroller is how a window tells you there is more below.
 
 `GreetStyle.tint` is the default brand color for `.softGradient` and `.animatedGradient()`. Pass `brand:` when the background should use a different brand color from the controls:
 
@@ -215,7 +215,7 @@ GreetView(
 
 The built-in presets are `.subtle`, `.standard`, and `.expressive`. Stronger motion moves the color field farther and faster; it does not change the colors, opacities, or blur, so choosing a calmer pace never means a paler sheet. For finer control, pass `GreetGradientMotion(strength:)`; values are clamped from `0` to `2`, and `0` keeps the animated-gradient color field static.
 
-GreetKit pins the footer with `safeAreaBar(edge:)` and hands the fade over overflowing content to the platform's scroll edge effect, so the treatment matches whatever the OS does elsewhere.
+GreetKit pins the footer with `safeAreaBar(edge:)` and fades overflowing content out just above it. The platform's scroll edge effect is hidden there: its hard style draws a dividing line even when nothing scrolls under the footer, and its soft style lets text run under the footer's own text.
 
 ## Styling
 

@@ -24,6 +24,9 @@ enum Tokens {
             width <= compactWidthBreakpoint
         }
         static let footerControlSpacing: CGFloat = Spacing.medium
+        /// How far above the footer scrolling content fades out. No taller than the content's
+        /// bottom padding, so content resting at the end of the scroll view is never faded.
+        static let footerFadeHeight: CGFloat = 20
         static let footerTopPadding: CGFloat = 20
         /// The button needs to sit off the sheet edge, not against it. On the overview the skip
         /// button hid this, but a route page has no skip, so the primary button landed on the edge.

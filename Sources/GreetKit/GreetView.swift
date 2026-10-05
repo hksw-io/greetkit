@@ -165,6 +165,17 @@ public struct GreetView<Content: GreetContent>: View {
         }
         .greetScrollIndicators()
         .scrollBounceBehavior(.basedOnSize)
+        // Content fades out just above the footer rather than meeting a dividing line. The scroll
+        // view's bounds end where the footer begins, so the mask needs no measuring. It reaches up
+        // through the top safe area so content can still scroll under the status bar.
+        .mask {
+            VStack(spacing: 0) {
+                Rectangle()
+                LinearGradient(colors: [.black, .clear], startPoint: .top, endPoint: .bottom)
+                    .frame(height: Tokens.Layout.footerFadeHeight)
+            }
+            .ignoresSafeArea(edges: .top)
+        }
         .safeAreaBar(edge: .bottom) {
             GreetFooterSection(
                 content: self.content,
@@ -177,7 +188,7 @@ public struct GreetView<Content: GreetContent>: View {
                 .greetHorizontalPadding(containerWidth: self.containerWidth)
                 .frame(maxWidth: .infinity)
         }
-        .scrollEdgeEffectStyle(.hard, for: .bottom)
+        .scrollEdgeEffectHidden(true, for: .bottom)
         .greetContainerWidth(self.$containerWidth)
         .greetSheetSizing()
         .onAppear {

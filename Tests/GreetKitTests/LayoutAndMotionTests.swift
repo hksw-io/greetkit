@@ -87,6 +87,13 @@ struct LayoutAndMotionTests {
         #expect(Tokens.Spacing.small < Tokens.Spacing.large)
     }
 
+    /// Content at the end of the scroll view rests `bottomPadding` above the footer. A fade taller
+    /// than that would dim the last row even when nothing is scrolling under it.
+    @Test
+    func footerFadeStopsShortOfContentAtRest() {
+        #expect(Tokens.Layout.footerFadeHeight <= Tokens.Platform.bottomPadding)
+    }
+
     @Test
     func footerControlsUseCompactVisualSpacingWithAccessibleSkipHeight() {
         #expect(Tokens.Layout.footerControlSpacing == Tokens.Spacing.medium)
