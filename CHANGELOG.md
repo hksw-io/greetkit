@@ -21,6 +21,7 @@ All notable changes to GreetKit are recorded here. The format follows
 ### Fixed
 
 - Route actions share the loading state, and pending or failed completion retains the final step for retry.
+- Gradient and custom backgrounds reach the screen edges when the view is presented full screen. They used to stop at the safe area, leaving bare bands at the top and bottom.
 
 ## [3.0.0] - 2026-08-09
 

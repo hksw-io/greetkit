@@ -101,40 +101,41 @@ public struct GreetView<Content: GreetContent>: View {
 
     private var greetContent: some View {
         ZStack {
-            GreetBackgroundView(background: self.background, brandColor: self.style.tint)
-
-            ZStack {
-                if let activeRoute = self.routeState.activeRoute(in: self.content.primaryRoutes),
-                   let primaryRouteDestination = self.primaryRouteDestination
-                {
-                    GreetPrimaryRouteDestinationContainer(
-                        content: self.content,
-                        destination: primaryRouteDestination(activeRoute.route),
-                        index: activeRoute.index,
-                        count: self.content.primaryRoutes.count,
-                        isLoading: self.isLoading,
-                        onBack: {
-                            self.routeState.retreat(in: self.content.primaryRoutes, isLoading: self.isLoading)
-                        },
-                        onNext: {
-                            self.routeState.advance(
-                                after: activeRoute.index,
-                                in: self.content.primaryRoutes,
-                                isLoading: self.isLoading)
-                        },
-                        onDone: self.completePrimaryRoutes)
-                        .id("primary-route-\(activeRoute.route.id)")
-                        .transition(self.routeTransition)
-                } else {
-                    self.greetOverview
-                        .id("overview")
-                        .transition(self.routeTransition)
-                }
+            if let activeRoute = self.routeState.activeRoute(in: self.content.primaryRoutes),
+               let primaryRouteDestination = self.primaryRouteDestination
+            {
+                GreetPrimaryRouteDestinationContainer(
+                    content: self.content,
+                    destination: primaryRouteDestination(activeRoute.route),
+                    index: activeRoute.index,
+                    count: self.content.primaryRoutes.count,
+                    isLoading: self.isLoading,
+                    onBack: {
+                        self.routeState.retreat(in: self.content.primaryRoutes, isLoading: self.isLoading)
+                    },
+                    onNext: {
+                        self.routeState.advance(
+                            after: activeRoute.index,
+                            in: self.content.primaryRoutes,
+                            isLoading: self.isLoading)
+                    },
+                    onDone: self.completePrimaryRoutes)
+                    .id("primary-route-\(activeRoute.route.id)")
+                    .transition(self.routeTransition)
+            } else {
+                self.greetOverview
+                    .id("overview")
+                    .transition(self.routeTransition)
             }
-            .animation(self.routeAnimation, value: self.primaryRoutePhaseID)
         }
+        .animation(self.routeAnimation, value: self.primaryRoutePhaseID)
         .clipped()
         .greetScrollIndicators()
+        // Behind the clip, not inside it. Inside, the clip cut the background off at the safe
+        // area, so a full-screen presentation showed bare bands above and below a gradient.
+        .background {
+            GreetBackgroundView(background: self.background, brandColor: self.style.tint)
+        }
     }
 
     private var greetOverview: some View {
