@@ -19,6 +19,7 @@ All notable changes to GreetKit are recorded here. The format follows
 ### Added
 
 - Back navigation and Command-[ in setup routes, with consumer-localized copy and VoiceOver focus restoration.
+- `GreetContent.footnote`, an optional sentence above the primary button for when the actions need explaining. It defaults to `nil`.
 
 ### Fixed
 

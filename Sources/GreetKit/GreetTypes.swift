@@ -48,6 +48,8 @@ public protocol GreetContent {
     var primaryButtonText: Text { get }
     var primaryButtonLoadingAccessibilityValue: Text { get }
     var skipButtonText: Text? { get }
+    /// A sentence shown above the primary button, for when the actions need explaining.
+    var footnote: Text? { get }
     var errorAlertTitle: Text { get }
     var errorOKText: Text { get }
 }
@@ -61,5 +63,6 @@ public extension GreetContent {
     var primaryRouteDoneButtonText: Text { Text("Done") }
     var primaryButtonLoadingAccessibilityValue: Text { Text("Loading") }
     var skipButtonText: Text? { nil }
+    var footnote: Text? { nil }
 }
 #endif

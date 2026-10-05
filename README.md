@@ -126,6 +126,8 @@ Mac proportions. Override it from the presenting code when an app wants somethin
 
 For a simple welcome sheet, omit `primaryRoutes` and `primaryRouteDestination`. The primary and skip callbacks can then dismiss the sheet directly.
 
+`footnote` adds an optional sentence above the primary button, for when the actions need explaining.
+
 For a setup flow, provide `primaryRoutes` and `primaryRouteDestination`. `onPrimary` fires first, then the library opens the first route with an in-sheet transition. Do not dismiss from `onPrimary` when using routes. Finish in `onPrimaryRoutesComplete` after the last route. `primaryRouteNextButtonText` and `primaryRouteDoneButtonText` customize the route controls. A single follow-up step is a chain of one — the button reads Done and the route completes the flow.
 
 `isLoading` also disables Next and Done and shows progress on the active route. If completion
@@ -232,7 +234,7 @@ GreetView(
 
 `GreetBackground` controls the surface behind the sheet content. `GreetStyle` carries the brand color: the view applies it with `.tint`, so the prominent glass button and the feature icons take it from the environment, and the built-in gradients derive their palette from it. Leave it `nil` for the system accent.
 
-Text roles are deliberately not overridable. Title, subtitle, feature rows, and the skip button use the system label hierarchy, and the primary button is the system prominent glass button — so the platform supplies the pressed, hovered, focused, disabled, and Increase Contrast treatments, and picks a label color legible against your tint. If an app needs a fully bespoke surface, use `.custom { context in ... }` for the background and style the destination views it owns.
+Text roles are deliberately not overridable. Title, subtitle, feature rows, the footnote, and the skip button use the system label hierarchy, and the primary button is the system prominent glass button — so the platform supplies the pressed, hovered, focused, disabled, and Increase Contrast treatments, and picks a label color legible against your tint. If an app needs a fully bespoke surface, use `.custom { context in ... }` for the background and style the destination views it owns.
 
 ## State ownership
 

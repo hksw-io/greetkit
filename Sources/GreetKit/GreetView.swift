@@ -556,6 +556,16 @@ private struct GreetFooterSection<Content: GreetContent>: View {
 
     var body: some View {
         VStack(spacing: Tokens.Layout.footerControlSpacing) {
+            if let footnote = self.content.footnote {
+                // Above the button it explains, so it is read before the action is taken.
+                footnote
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity)
+            }
+
             GreetPrimaryButton(
                 label: self.content.primaryButtonText,
                 loading: GreetPrimaryButton.Loading(
@@ -746,6 +756,9 @@ private struct StressGreetPreviewContent: GreetContent {
     }
     var skipButtonText: Text? {
         Text("Skip this longer greet flow for now")
+    }
+    var footnote: Text? {
+        Text("This footnote is long enough to wrap, so the footer has to grow without pushing the buttons off screen.")
     }
     var errorAlertTitle: Text { Text("Something went wrong") }
     var errorOKText: Text { Text("OK") }

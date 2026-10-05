@@ -79,6 +79,7 @@ struct GreetViewTests {
         #expect(content.appIcon == nil)
         #expect(content.subtitle == nil)
         #expect(content.skipButtonText == nil)
+        #expect(content.footnote == nil)
         #expect(content.primaryRoutes.isEmpty)
     }
 }
@@ -109,6 +110,7 @@ private struct RichContent: GreetContent {
     var primaryRouteDoneButtonText: Text { Text("Finish") }
     var primaryButtonLoadingAccessibilityValue: Text { Text("Laddar") }
     var skipButtonText: Text? { Text("Skip") }
+    var footnote: Text? { Text("Footnote.") }
     var errorAlertTitle: Text { Text("Something went wrong") }
     var errorOKText: Text { Text("OK") }
 }
