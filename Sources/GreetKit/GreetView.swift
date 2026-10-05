@@ -348,25 +348,27 @@ private struct GreetHeaderSection<Content: GreetContent>: View {
                     .accessibilityHidden(true)
             }
 
-            self.content.title
-            #if os(macOS)
-                .font(.title)
-            #else
-                .font(.largeTitle)
-            #endif
-                .fontWeight(.bold)
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
-                .accessibilityAddTraits(.isHeader)
-                .accessibilityFocused(self.$titleFocused)
-                .onAppear { self.titleFocused = true }
-
-            if let subtitle = self.content.subtitle {
-                subtitle
-                    .font(.body)
-                    .foregroundStyle(.secondary)
+            VStack(spacing: Tokens.Spacing.small) {
+                self.content.title
+                #if os(macOS)
+                    .font(.title)
+                #else
+                    .font(.largeTitle)
+                #endif
+                    .fontWeight(.bold)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityAddTraits(.isHeader)
+                    .accessibilityFocused(self.$titleFocused)
+                    .onAppear { self.titleFocused = true }
+
+                if let subtitle = self.content.subtitle {
+                    subtitle
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             }
         }
     }
@@ -566,7 +568,7 @@ private struct GreetFooterSection<Content: GreetContent>: View {
                     self.onSkip()
                 } label: {
                     skipText
-                        .font(.subheadline)
+                        .font(.body)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                         .frame(
@@ -576,7 +578,9 @@ private struct GreetFooterSection<Content: GreetContent>: View {
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-                .foregroundStyle(.secondary)
+                // Tinted body text, the way system setup screens style their second action. Small
+                // grey text read as a caption or a disabled control rather than something to tap.
+                .foregroundStyle(.tint)
                 .greetLinkPointer()
                 .keyboardShortcut(self.allowsCancelShortcut ? .cancelAction : nil)
                 .disabled(self.isLoading)

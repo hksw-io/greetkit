@@ -80,6 +80,13 @@ struct LayoutAndMotionTests {
         #endif
     }
 
+    /// The subtitle belongs to the title. It has to sit closer to it than the icon does, or the
+    /// header reads as three unrelated items.
+    @Test
+    func subtitleSitsCloserToTheTitleThanTheIconDoes() {
+        #expect(Tokens.Spacing.small < Tokens.Spacing.large)
+    }
+
     @Test
     func footerControlsUseCompactVisualSpacingWithAccessibleSkipHeight() {
         #expect(Tokens.Layout.footerControlSpacing == Tokens.Spacing.medium)

@@ -3,6 +3,9 @@ import SwiftUI
 
 enum Tokens {
     enum Spacing {
+        /// Between a title and the subtitle that belongs to it. Tighter than the gap around the
+        /// icon, so the two read as one heading rather than as two separate items.
+        static let small: CGFloat = 8
         static let medium: CGFloat = 12
         static let large: CGFloat = 16
     }

@@ -9,6 +9,8 @@ All notable changes to GreetKit are recorded here. The format follows
 ### Changed
 
 - Route Back uses a circular chevron button, retaining the consumer's localized text for accessibility and pointer help.
+- The subtitle sits 8pt under the title instead of 16pt, so the two read as one heading. The gap under the icon is unchanged.
+- The skip action is body-size text in the tint colour instead of small secondary text, which read as a caption or a disabled control.
 
 ### Maintenance
 
