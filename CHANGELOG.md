@@ -6,6 +6,8 @@ All notable changes to GreetKit are recorded here. The format follows
 
 ## [Unreleased]
 
+## [3.1.0] - 2026-10-05
+
 ### Changed
 
 - Route Back uses a circular chevron button, retaining the consumer's localized text for accessibility and pointer help.
