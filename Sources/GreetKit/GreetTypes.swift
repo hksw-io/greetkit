@@ -33,6 +33,7 @@ public protocol GreetContent {
     var subtitle: Text? { get }
     var features: [GreetFeatureItem] { get }
     var primaryButtonText: Text { get }
+    /// What VoiceOver announces as the primary button's value while `isLoading` is `true`.
     var primaryButtonLoadingAccessibilityValue: Text { get }
     var skipButtonText: Text? { get }
     /// A sentence shown above the primary button, for when the actions need explaining.
@@ -44,7 +45,6 @@ public protocol GreetContent {
 public extension GreetContent {
     var appIcon: Image? { nil }
     var subtitle: Text? { nil }
-    var primaryButtonLoadingAccessibilityValue: Text { Text("Loading") }
     var skipButtonText: Text? { nil }
     var footnote: Text? { nil }
 }

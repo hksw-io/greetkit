@@ -82,6 +82,7 @@ struct GreetViewTests {
             var title: Text { Text("Defaults") }
             var features: [GreetFeatureItem] { [] }
             var primaryButtonText: Text { Text("Go") }
+            var primaryButtonLoadingAccessibilityValue: Text { Text("Loading") }
             var errorAlertTitle: Text { Text("Error") }
             var errorOKText: Text { Text("OK") }
         }

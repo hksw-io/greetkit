@@ -37,6 +37,9 @@ All notable changes to GreetKit are recorded here. The format follows
   of `isLoading: $isLoading`, and drop `.constant(false)`.
 - `isLoading` defaults to `false`, `errorMessage` to `.constant(nil)` and `onSkip` to `{}`, so an
   app with no loading state, error or skip button passes only `content` and `onPrimary`.
+- **Breaking.** `GreetContent.primaryButtonLoadingAccessibilityValue` no longer defaults to the
+  English "Loading". The package ships no strings, so every `GreetContent` supplies it. It was the
+  last English default; the route strings went with the route flow.
 - `GreetBackground` is `Sendable`, now that it no longer stores a closure.
 - The side padding follows the horizontal size class instead of a 390 pt width breakpoint: 16 pt
   when compact, 24 pt when regular, as in ReleaseKit. iPhones wider than 390 pt in portrait and an

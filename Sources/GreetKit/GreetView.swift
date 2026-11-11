@@ -538,6 +538,7 @@ private struct GreetPreviewContent: GreetContent {
         ]
     }
     var primaryButtonText: Text { Text("Get started") }
+    var primaryButtonLoadingAccessibilityValue: Text { Text("Loading") }
     var skipButtonText: Text? { Text("Skip for now") }
     var errorAlertTitle: Text { Text("Something went wrong") }
     var errorOKText: Text { Text("OK") }
@@ -565,6 +566,7 @@ private struct StressGreetPreviewContent: GreetContent {
     var primaryButtonText: Text {
         Text("Get started with all sample data and preferences")
     }
+    var primaryButtonLoadingAccessibilityValue: Text { Text("Loading") }
     var skipButtonText: Text? {
         Text("Skip this longer greet flow for now")
     }

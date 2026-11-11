@@ -71,6 +71,7 @@ struct MyGreet: GreetContent {
     }
     var footnote: Text? { Text("You can change these choices later in Settings.") }
     var primaryButtonText: Text { Text("Get started") }
+    var primaryButtonLoadingAccessibilityValue: Text { Text("Loading") }
     var skipButtonText: Text? { Text("Skip for now") }
     var errorAlertTitle: Text { Text("Something went wrong") }
     var errorOKText: Text { Text("OK") }
@@ -98,9 +99,10 @@ skip button leaves the rest out:
 GreetView(content: MyGreet(), onPrimary: { dismiss() })
 ```
 
-Required: `title`, `features`, `primaryButtonText`, `errorAlertTitle`, and `errorOKText`.
-Everything else has a default: `appIcon`, `subtitle`, `skipButtonText`, and `footnote` default to
-`nil`, and the loading accessibility value to English.
+Required: `title`, `features`, `primaryButtonText`, `primaryButtonLoadingAccessibilityValue`,
+`errorAlertTitle`, and `errorOKText`. The optional members, `appIcon`, `subtitle`,
+`skipButtonText`, and `footnote`, default to `nil`. The package ships no strings of its own, so
+every word on screen or read by VoiceOver comes from the app.
 
 On macOS the view carries a 480×420 pt minimum and a 560×520 pt ideal size, so a sheet opens at
 Mac proportions. To present it larger, set a sizing on the presentation; nothing can go below the
@@ -223,7 +225,7 @@ The view is purely presentational:
 
 ## Accessibility
 
-The library ships no localizations. One `GreetContent` member falls back to English, `primaryButtonLoadingAccessibilityValue` ("Loading"), so override it for any other locale. While `isLoading` is `true` the primary button announces it:
+The library ships no strings and no localizations: every string comes from `GreetContent`, in whatever language the app supplies. While `isLoading` is `true` the primary button announces `primaryButtonLoadingAccessibilityValue` as its value:
 
 ```swift
 var primaryButtonLoadingAccessibilityValue: Text {

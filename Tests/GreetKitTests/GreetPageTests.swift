@@ -50,6 +50,7 @@ private struct PageTestContent: GreetContent {
     var title: Text { Text("Welcome") }
     var features: [GreetFeatureItem] { [] }
     var primaryButtonText: Text { Text("Get started") }
+    var primaryButtonLoadingAccessibilityValue: Text { Text("Loading") }
     var errorAlertTitle: Text { Text("Error") }
     var errorOKText: Text { Text("OK") }
 }
