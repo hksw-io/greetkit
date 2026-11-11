@@ -61,6 +61,11 @@ All notable changes to GreetKit are recorded here. The format follows
   chosen from a width measured one layout pass late, so iPhones 393 pt and wider started at 16 pt
   and jumped to 24 pt.
 
+### Maintenance
+
+- CI no longer has an Xcode 26.6 leg. It tests macOS and the iOS Simulator with Xcode 27.0 only,
+  so nothing in CI builds with an Xcode 26 toolchain or runs on an OS 26 runtime.
+
 ## [3.1.0] - 2026-10-05
 
 ### Changed
