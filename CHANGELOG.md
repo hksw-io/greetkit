@@ -47,8 +47,9 @@ All notable changes to GreetKit are recorded here. The format follows
   last English default; the route strings went with the route flow.
 - `GreetBackground` is `Sendable`, now that it no longer stores a closure.
 - The side padding follows the horizontal size class instead of a 390 pt width breakpoint: 16 pt
-  when compact, 24 pt when regular, as in ReleaseKit. iPhones wider than 390 pt in portrait and an
-  iPad form sheet now get 16 pt where they had 24 pt.
+  when compact, 24 pt when regular, as in ReleaseKit. These now get 16 pt where they had 24 pt:
+  iPhones wider than 390 pt in portrait, every iPhone in landscape except the Plus and Pro Max
+  models, an iPad form sheet, and iPad Split View and Slide Over widths over 390 pt.
 
 ### Fixed
 

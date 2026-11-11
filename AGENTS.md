@@ -24,7 +24,7 @@ Instructions for agents working in this repository. RFC 2119 keywords apply.
 
 - `GreetView` should remain a reusable SwiftUI view driven by `GreetContent`.
 - The consuming app owns loading, errors, completion, dismissal, and persistence. Keep this package presentational unless the requested change explicitly expands scope.
-- `isLoading` and `errorMessage` bindings are part of the public behavior and must stay predictable under repeated taps, alert dismissal, and optional skip states.
+- The `isLoading` flag and the `errorMessage` binding are part of the public behavior and must stay predictable under repeated taps, alert dismissal, and optional skip states.
 - Feature rows must keep stable identity and work with optional icons, labels, subtitles, skip buttons, and long localized text.
 - Primary and skip actions remain caller-controlled through `onPrimary` and `onSkip`.
 

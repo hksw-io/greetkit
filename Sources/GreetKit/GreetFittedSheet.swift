@@ -20,6 +20,11 @@ public extension View {
     /// full-height sheet and scrolls. The height is also offered as the view's ideal height, so a
     /// hosting controller sized with `sizingOptions = .preferredContentSize` fits the same way.
     ///
+    /// It sets no `presentationBackground`. With `.softGradient` the view draws its own opaque
+    /// background to the sheet's edges; with `.system` it draws none, so an iPhone sheet at a
+    /// partial-height detent shows the system's glass sheet background. Add
+    /// `.presentationBackground(_:)` for an opaque sheet with `.system`.
+    ///
     /// It measures the scroll view `GreetView` owns. A `GreetPage` keeps its title outside whatever
     /// scrolls in its content, so this modifier is not for it.
     func greetFittedSheet() -> some View {
