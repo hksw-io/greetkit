@@ -17,13 +17,9 @@ struct GreetViewTests {
             errorMessage: .constant("Network offline"),
             allowsInteractiveDismissal: false,
             onPrimary: {},
-            onSkip: {},
-            onPrimaryRoutesComplete: {},
-            primaryRouteDestination: { route in
-                Text(route.id)
-            })
-            .greetBackground(.animatedGradient(brand: .orange))
-            .greetStyle(GreetStyle(tint: .indigo))
+            onSkip: {})
+            .greetBackground(.softGradient(brand: .orange))
+            .tint(.indigo)
     }
 
     @Test
@@ -58,13 +54,6 @@ struct GreetViewTests {
     }
 
     @Test
-    func primaryRouteStoresStableID() {
-        let route = GreetPrimaryRoute(id: "sample-data")
-
-        #expect(route.id == "sample-data")
-    }
-
-    @Test
     func contentProtocolSuppliesDefaultsForOptionalMembers() {
         struct DefaultsContent: GreetContent {
             var title: Text { Text("Defaults") }
@@ -80,7 +69,6 @@ struct GreetViewTests {
         #expect(content.subtitle == nil)
         #expect(content.skipButtonText == nil)
         #expect(content.footnote == nil)
-        #expect(content.primaryRoutes.isEmpty)
     }
 }
 
@@ -98,16 +86,7 @@ private struct RichContent: GreetContent {
             GreetFeatureItem(id: "bare", description: Text("Description only.")),
         ]
     }
-    var primaryRoutes: [GreetPrimaryRoute] {
-        [
-            GreetPrimaryRoute(id: "permissions"),
-            GreetPrimaryRoute(id: "sample-data"),
-        ]
-    }
     var primaryButtonText: Text { Text("Get started") }
-    var primaryRouteNextButtonText: Text { Text("Next step") }
-    var primaryRouteBackButtonText: Text { Text("Previous step") }
-    var primaryRouteDoneButtonText: Text { Text("Finish") }
     var primaryButtonLoadingAccessibilityValue: Text { Text("Laddar") }
     var skipButtonText: Text? { Text("Skip") }
     var footnote: Text? { Text("Footnote.") }

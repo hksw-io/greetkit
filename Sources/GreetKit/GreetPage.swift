@@ -75,7 +75,7 @@ public struct GreetPage<Content: View, Footer: View>: View {
         .greetContainerWidth(self.$containerWidth)
         .greetSheetSizing()
         .background {
-            GreetBackgroundView(background: self.background, brandColor: nil)
+            GreetBackgroundView(background: self.background)
         }
     }
 

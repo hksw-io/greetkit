@@ -28,8 +28,8 @@ enum Tokens {
         /// bottom padding, so content resting at the end of the scroll view is never faded.
         static let footerFadeHeight: CGFloat = 20
         static let footerTopPadding: CGFloat = 20
-        /// The button needs to sit off the sheet edge, not against it. On the overview the skip
-        /// button hid this, but a route page has no skip, so the primary button landed on the edge.
+        /// The button needs to sit off the sheet edge, not against it. A skip button under it hides
+        /// this, but without one the primary button would land on the edge.
         static let footerBottomPadding: CGFloat = Spacing.large
     }
 
@@ -54,7 +54,6 @@ enum Tokens {
             static let maxFeatureStaggerDelay: Double = 1.44
             static let revealDuration: Double = 0.45
             static let revealOffset: CGFloat = 20
-            static let routeTransitionDuration: Double = 0.26
         #else
             static let featureBaseDelay: Double = 0.3
             static let featureStaggerDelay: Double = 0.17
@@ -63,7 +62,6 @@ enum Tokens {
             static let maxFeatureStaggerDelay: Double = 1.19
             static let revealDuration: Double = 0.48
             static let revealOffset: CGFloat = 38
-            static let routeTransitionDuration: Double = 0.32
         #endif
 
         static func revealDelay(for index: Int) -> Double {

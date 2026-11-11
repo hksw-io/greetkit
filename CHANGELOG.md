@@ -16,6 +16,24 @@ All notable changes to GreetKit are recorded here. The format follows
 - `GreetSkipButtonStyle`, applied with `.buttonStyle(.greetSkip)`, so a second action in a
   `GreetPage` footer matches the welcome screen's skip button.
 
+### Removed
+
+- **Breaking.** The multi-page route flow: the `GreetView` initializer taking
+  `primaryRouteDestination` and `onPrimaryRoutesComplete`, `GreetPrimaryRoute`, and the
+  `GreetContent` members `primaryRoutes`, `primaryRouteNextButtonText`,
+  `primaryRouteBackButtonText` and `primaryRouteDoneButtonText`. No app used it. Build follow-up
+  screens with `GreetPage` and present them from the app.
+- **Breaking.** `GreetStyle` and `greetStyle(_:)`. Set the brand colour with SwiftUI's `tint(_:)`.
+  `GreetView` used to reset the tint to its style's; it now takes the one in its environment. The
+  soft gradient no longer follows a style tint, so pass `.softGradient(brand:)` for anything but
+  blue.
+- **Breaking.** The `.animatedGradient` and `.custom` backgrounds, with `GreetGradientMotion` and
+  `GreetBackgroundContext`. Apps only used `.softGradient`, which stays alongside `.system`.
+
+### Changed
+
+- `GreetBackground` is `Sendable`, now that it no longer stores a closure.
+
 ## [3.1.0] - 2026-10-05
 
 ### Changed

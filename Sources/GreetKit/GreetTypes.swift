@@ -27,24 +27,11 @@ public struct GreetFeatureItem: Identifiable, Sendable {
     }
 }
 
-public struct GreetPrimaryRoute: Identifiable, Hashable, Sendable {
-    public let id: String
-
-    public init(id: String) {
-        self.id = id
-    }
-}
-
 public protocol GreetContent {
     var appIcon: Image? { get }
     var title: Text { get }
     var subtitle: Text? { get }
     var features: [GreetFeatureItem] { get }
-    var primaryRoutes: [GreetPrimaryRoute] { get }
-    var primaryRouteNextButtonText: Text { get }
-    /// Accessible name and pointer help for the back chevron.
-    var primaryRouteBackButtonText: Text { get }
-    var primaryRouteDoneButtonText: Text { get }
     var primaryButtonText: Text { get }
     var primaryButtonLoadingAccessibilityValue: Text { get }
     var skipButtonText: Text? { get }
@@ -57,10 +44,6 @@ public protocol GreetContent {
 public extension GreetContent {
     var appIcon: Image? { nil }
     var subtitle: Text? { nil }
-    var primaryRoutes: [GreetPrimaryRoute] { [] }
-    var primaryRouteNextButtonText: Text { Text("Next") }
-    var primaryRouteBackButtonText: Text { Text("Back") }
-    var primaryRouteDoneButtonText: Text { Text("Done") }
     var primaryButtonLoadingAccessibilityValue: Text { Text("Loading") }
     var skipButtonText: Text? { nil }
     var footnote: Text? { nil }

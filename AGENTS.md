@@ -35,7 +35,7 @@ Instructions for agents working in this repository. RFC 2119 keywords apply.
 - UI-facing changes need automated construction/smoke coverage and manual or preview verification across varied screen sizes, orientations, and devices/windows.
 - Run `swift test` before calling work complete. If the change is UI-heavy, also exercise Xcode previews or an equivalent local host app.
 - `swift test` builds for macOS only. When a change touches platform-conditional code, also run `xcodebuild -scheme GreetKit -destination 'generic/platform=iOS' build`.
-- Keep the pure helpers (layout, mask, motion, and route state math) free of SwiftUI view types so they stay unit-testable without a hosted view.
+- Keep the pure helpers (layout, mask, and motion math) free of SwiftUI view types so they stay unit-testable without a hosted view.
 - Run `git diff --check` before finalizing.
 - CI (`.github/workflows/ci.yml`) runs the macOS build, the tests, and the iOS build. Keep it green.
 

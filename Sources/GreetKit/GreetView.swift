@@ -7,18 +7,14 @@ public struct GreetView<Content: GreetContent>: View {
     @Binding var errorMessage: String?
     let allowsInteractiveDismissal: Bool
     private var background: GreetBackground = .system
-    private var style: GreetStyle = .standard
     let onPrimary: () -> Void
     let onSkip: () -> Void
-    let primaryRouteDestination: ((GreetPrimaryRoute) -> AnyView)?
-    let onPrimaryRoutesComplete: () -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @Environment(\.colorSchemeContrast) private var colorSchemeContrast
     @Environment(\.colorScheme) private var colorScheme
     @State private var featuresVisible = false
-    @State private var routeState = GreetRouteState()
     @State private var containerWidth: CGFloat = Tokens.Platform.assumedContainerWidth
 
     @ScaledMetric(relativeTo: .largeTitle) private var iconSize: CGFloat = Tokens.Platform.iconSize
@@ -42,103 +38,9 @@ public struct GreetView<Content: GreetContent>: View {
         self.allowsInteractiveDismissal = allowsInteractiveDismissal
         self.onPrimary = onPrimary
         self.onSkip = onSkip
-        self.primaryRouteDestination = nil
-        self.onPrimaryRoutesComplete = {}
-    }
-
-    public init<PrimaryRouteDestination: View>(
-        content: Content,
-        isLoading: Binding<Bool>,
-        errorMessage: Binding<String?>,
-        allowsInteractiveDismissal: Bool = true,
-        onPrimary: @escaping () -> Void,
-        onSkip: @escaping () -> Void,
-        onPrimaryRoutesComplete: @escaping () -> Void = {},
-        @ViewBuilder primaryRouteDestination: @escaping (GreetPrimaryRoute) -> PrimaryRouteDestination)
-    {
-        self.content = content
-        self._isLoading = isLoading
-        self._errorMessage = errorMessage
-        self.allowsInteractiveDismissal = allowsInteractiveDismissal
-        self.onPrimary = onPrimary
-        self.onSkip = onSkip
-        self.primaryRouteDestination = { AnyView(primaryRouteDestination($0)) }
-        self.onPrimaryRoutesComplete = onPrimaryRoutesComplete
     }
 
     public var body: some View {
-        self.greetContent
-            .tint(self.style.tint)
-            .alert(
-                self.content.errorAlertTitle,
-                isPresented: self.errorPresented,
-                actions: {
-                    Button(role: .cancel) {
-                        self.errorMessage = nil
-                    } label: {
-                        self.content.errorOKText
-                    }
-                },
-                message: {
-                    if let message = self.errorMessage {
-                        Text(message)
-                    }
-                })
-            .interactiveDismissDisabled(!self.allowsInteractiveDismissal)
-    }
-
-    public func greetBackground(_ background: GreetBackground) -> Self {
-        var view = self
-        view.background = background
-        return view
-    }
-
-    public func greetStyle(_ style: GreetStyle) -> Self {
-        var view = self
-        view.style = style
-        return view
-    }
-
-    private var greetContent: some View {
-        ZStack {
-            if let activeRoute = self.routeState.activeRoute(in: self.content.primaryRoutes),
-               let primaryRouteDestination = self.primaryRouteDestination
-            {
-                GreetPrimaryRouteDestinationContainer(
-                    content: self.content,
-                    destination: primaryRouteDestination(activeRoute.route),
-                    index: activeRoute.index,
-                    count: self.content.primaryRoutes.count,
-                    isLoading: self.isLoading,
-                    onBack: {
-                        self.routeState.retreat(in: self.content.primaryRoutes, isLoading: self.isLoading)
-                    },
-                    onNext: {
-                        self.routeState.advance(
-                            after: activeRoute.index,
-                            in: self.content.primaryRoutes,
-                            isLoading: self.isLoading)
-                    },
-                    onDone: self.completePrimaryRoutes)
-                    .id("primary-route-\(activeRoute.route.id)")
-                    .transition(self.routeTransition)
-            } else {
-                self.greetOverview
-                    .id("overview")
-                    .transition(self.routeTransition)
-            }
-        }
-        .animation(self.routeAnimation, value: self.primaryRoutePhaseID)
-        .clipped()
-        .greetScrollIndicators()
-        // Behind the clip, not inside it. Inside, the clip cut the background off at the safe
-        // area, so a full-screen presentation showed bare bands above and below a gradient.
-        .background {
-            GreetBackgroundView(background: self.background, brandColor: self.style.tint)
-        }
-    }
-
-    private var greetOverview: some View {
         ScrollView(.vertical) {
             VStack(spacing: self.contentSpacing) {
                 GreetHeaderSection(
@@ -165,9 +67,7 @@ public struct GreetView<Content: GreetContent>: View {
         }
         .greetScrollIndicators()
         .scrollBounceBehavior(.basedOnSize)
-        // Content fades out just above the footer rather than meeting a dividing line. The scroll
-        // view's bounds end where the footer begins, so the mask needs no measuring. It reaches up
-        // through the top safe area so content can still scroll under the status bar.
+        // Content fades out just above the footer rather than meeting a dividing line.
         .mask { GreetFooterFade() }
         .safeAreaBar(edge: .bottom) {
             GreetFooterSection(
@@ -187,42 +87,39 @@ public struct GreetView<Content: GreetContent>: View {
         .onAppear {
             self.featuresVisible = true
         }
+        .clipped()
+        // Behind the clip, not inside it. Inside, the clip cut the background off at the safe
+        // area, so a full-screen presentation showed bare bands above and below a gradient.
+        .background {
+            GreetBackgroundView(background: self.background)
+        }
+        .alert(
+            self.content.errorAlertTitle,
+            isPresented: self.errorPresented,
+            actions: {
+                Button(role: .cancel) {
+                    self.errorMessage = nil
+                } label: {
+                    self.content.errorOKText
+                }
+            },
+            message: {
+                if let message = self.errorMessage {
+                    Text(message)
+                }
+            })
+        .interactiveDismissDisabled(!self.allowsInteractiveDismissal)
+    }
+
+    public func greetBackground(_ background: GreetBackground) -> Self {
+        var view = self
+        view.background = background
+        return view
     }
 
     private func performPrimaryAction() {
         guard !self.isLoading else { return }
         self.onPrimary()
-
-        self.routeState.begin(
-            routes: self.content.primaryRoutes,
-            hasRouteDestination: self.primaryRouteDestination != nil)
-    }
-
-    private func completePrimaryRoutes() {
-        guard !self.isLoading else { return }
-        self.onPrimaryRoutesComplete()
-        self.routeState.complete(isLoading: self.isLoading, hasError: self.errorMessage != nil)
-    }
-
-    private var routeTransition: AnyTransition {
-        guard !self.reduceMotion else {
-            return .opacity
-        }
-
-        switch self.routeState.transitionDirection {
-        case .forward:
-            return .push(from: .trailing)
-        case .backward:
-            return .push(from: .leading)
-        }
-    }
-
-    private var routeAnimation: Animation? {
-        self.reduceMotion ? nil : .smooth(duration: Tokens.Motion.routeTransitionDuration)
-    }
-
-    private var primaryRoutePhaseID: String {
-        self.routeState.phaseID(in: self.content.primaryRoutes)
     }
 
     private var errorPresented: Binding<Bool> {
@@ -231,103 +128,6 @@ public struct GreetView<Content: GreetContent>: View {
             set: { newValue in
                 if !newValue { self.errorMessage = nil }
             })
-    }
-}
-
-/// Kept as its own view rather than inlined into `GreetView.body` so an animating background —
-/// `.animatedGradient` drives a `TimelineView` over a `Canvas` — sits behind its own render
-/// boundary instead of being rebuilt whenever the sheet's own state moves.
-///
-/// It reads the accessibility environment itself. `GreetView` reads the same values for the
-/// feature reveal and the route transitions, but forwarding them here as well made six stored
-/// properties out of what is really two inputs.
-struct GreetBackgroundView: View {
-    let background: GreetBackground
-    let brandColor: Color?
-
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
-    @Environment(\.colorSchemeContrast) private var colorSchemeContrast
-    @Environment(\.colorScheme) private var colorScheme
-
-    var body: some View {
-        self.background
-            .makeView(context: GreetBackgroundContext(
-                reduceMotion: self.reduceMotion,
-                reduceTransparency: self.reduceTransparency,
-                colorSchemeContrast: self.colorSchemeContrast,
-                brandColor: self.brandColor,
-                colorScheme: self.colorScheme))
-            .ignoresSafeArea()
-    }
-}
-
-private struct GreetPrimaryRouteDestinationContainer<Content: GreetContent, Destination: View>: View {
-    let content: Content
-    let destination: Destination
-    let index: Int
-    let count: Int
-    let isLoading: Bool
-    let onBack: () -> Void
-    let onNext: () -> Void
-    let onDone: () -> Void
-
-    @State private var containerWidth: CGFloat = Tokens.Platform.assumedContainerWidth
-
-    @AccessibilityFocusState(for: .voiceOver) private var destinationFocused: Bool
-
-    var body: some View {
-        self.destination
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .accessibilityElement(children: .contain)
-            .accessibilityFocused(self.$destinationFocused)
-            .onAppear { self.destinationFocused = true }
-            .safeAreaBar(edge: .bottom) {
-                HStack(spacing: Tokens.Layout.footerControlSpacing) {
-                    Button(action: self.onBack) {
-                        Label {
-                            self.content.primaryRouteBackButtonText
-                        } icon: {
-                            Image(systemName: "chevron.backward")
-                        }
-                    }
-                    .labelStyle(.iconOnly)
-                    .buttonStyle(.bordered)
-                    .buttonBorderShape(.circle)
-                    .controlSize(.large)
-                    .frame(
-                        minWidth: Tokens.Platform.minimumControlHeight,
-                        minHeight: Tokens.Platform.minimumControlHeight)
-                    .contentShape(Rectangle())
-                    .help(self.content.primaryRouteBackButtonText)
-                    .keyboardShortcut("[", modifiers: .command)
-                    .disabled(self.isLoading)
-
-                    GreetPrimaryButton(
-                        label: self.primaryButtonText,
-                        loading: .init(
-                            isLoading: self.isLoading,
-                            accessibilityValue: self.content.primaryButtonLoadingAccessibilityValue),
-                        action: {
-                            self.isLastRoute ? self.onDone() : self.onNext()
-                        })
-                }
-                .frame(maxWidth: Tokens.Layout.contentMaxWidth)
-                .greetHorizontalPadding(containerWidth: self.containerWidth)
-                .padding(.top, Tokens.Layout.footerTopPadding)
-                .padding(.bottom, Tokens.Layout.footerBottomPadding)
-                .frame(maxWidth: .infinity)
-            }
-            .greetContainerWidth(self.$containerWidth)
-            .greetSheetSizing()
-    }
-
-    private var isLastRoute: Bool {
-        self.index >= self.count - 1
-    }
-
-    private var primaryButtonText: Text {
-        self.isLastRoute ? self.content.primaryRouteDoneButtonText : self.content.primaryRouteNextButtonText
     }
 }
 
@@ -479,21 +279,14 @@ private struct GreetFeatureRow: View {
     }
 }
 
-/// The primary action shared by the overview footer and the route destinations.
+/// The primary action.
 ///
 /// Uses the system prominent glass button so press, hover, focus, and the disabled and
-/// high-contrast treatments all come from the platform. The surrounding `GreetView` applies
-/// `GreetStyle.tint`, which is what colours the button.
-///
-/// The overview and route controls share the consumer's loading state.
+/// high-contrast treatments all come from the platform. The tint in the environment colours it.
 private struct GreetPrimaryButton: View {
-    struct Loading {
-        let isLoading: Bool
-        let accessibilityValue: Text
-    }
-
     let label: Text
-    var loading: Loading?
+    let isLoading: Bool
+    let loadingAccessibilityValue: Text
     let action: () -> Void
 
     @State private var activationCount = 0
@@ -525,18 +318,10 @@ private struct GreetPrimaryButton: View {
         .disabled(self.isLoading)
     }
 
-    private var isLoading: Bool {
-        self.loading?.isLoading ?? false
-    }
-
     /// Empty rather than absent when idle, so the modifier is always present and the label keeps
     /// one identity across the loading flip.
     private var accessibilityValue: Text {
-        guard self.isLoading, let loading = self.loading else {
-            return Text(verbatim: "")
-        }
-
-        return loading.accessibilityValue
+        self.isLoading ? self.loadingAccessibilityValue : Text(verbatim: "")
     }
 
     /// Cross-fades the label and the progress indicator in place, with the label alone deciding
@@ -550,19 +335,14 @@ private struct GreetPrimaryButton: View {
     /// — while the button's own body never re-evaluated. Pure layout churn, and the reason the
     /// button looked like jelly while loading. An overlay takes its size from what it covers and
     /// contributes nothing back.
-    @ViewBuilder
     private var labelContent: some View {
-        if self.loading != nil {
-            self.styledLabel
-                .opacity(self.isLoading ? 0 : 1)
-                .overlay {
-                    ProgressView()
-                        .controlSize(.small)
-                        .opacity(self.isLoading ? 1 : 0)
-                }
-        } else {
-            self.styledLabel
-        }
+        self.styledLabel
+            .opacity(self.isLoading ? 0 : 1)
+            .overlay {
+                ProgressView()
+                    .controlSize(.small)
+                    .opacity(self.isLoading ? 1 : 0)
+            }
     }
 
     private var styledLabel: some View {
@@ -600,9 +380,8 @@ private struct GreetFooterSection<Content: GreetContent>: View {
 
             GreetPrimaryButton(
                 label: self.content.primaryButtonText,
-                loading: GreetPrimaryButton.Loading(
-                    isLoading: self.isLoading,
-                    accessibilityValue: self.content.primaryButtonLoadingAccessibilityValue),
+                isLoading: self.isLoading,
+                loadingAccessibilityValue: self.content.primaryButtonLoadingAccessibilityValue,
                 action: self.onPrimary)
 
             if let skipText = self.content.skipButtonText {
@@ -706,9 +485,8 @@ extension View {
 
     /// Gives a Mac sheet window proportions rather than phone ones.
     ///
-    /// Applied by the overview and by each route destination, because either can be the first
-    /// thing the sheet presents and the window must not resize as the flow moves between them.
-    /// iOS sets no floor — the presentation owns the size there.
+    /// Applied by `GreetView` and by `GreetPage`, so a page that follows the welcome sheet opens
+    /// at the same size. iOS sets no floor — the presentation owns the size there.
     @ViewBuilder
     func greetSheetSizing() -> some View {
         #if os(macOS)
@@ -759,15 +537,7 @@ private struct GreetPreviewContent: GreetContent {
                 description: "Study smarter, not harder."),
         ]
     }
-    var primaryRoutes: [GreetPrimaryRoute] {
-        [
-            GreetPrimaryRoute(id: "permissions"),
-            GreetPrimaryRoute(id: "sample-data"),
-            GreetPrimaryRoute(id: "notifications"),
-        ]
-    }
     var primaryButtonText: Text { Text("Get started") }
-    var primaryRouteDoneButtonText: Text { Text("Finish") }
     var skipButtonText: Text? { Text("Skip for now") }
     var errorAlertTitle: Text { Text("Something went wrong") }
     var errorOKText: Text { Text("OK") }
@@ -805,9 +575,7 @@ private struct StressGreetPreviewContent: GreetContent {
     var errorOKText: Text { Text("OK") }
 }
 
-/// The interactive one: run the route chain, watch the loading flip, switch the background from
-/// the canvas. Background and motion variants are a modifier away, so they are not separate
-/// previews.
+/// The interactive one: watch the loading flip, switch the background from the canvas.
 #Preview("Greet") {
     @Previewable @State var isLoading = false
     @Previewable @State var errorMessage: String?
@@ -816,15 +584,9 @@ private struct StressGreetPreviewContent: GreetContent {
         content: GreetPreviewContent(),
         isLoading: $isLoading,
         errorMessage: $errorMessage,
-        onPrimary: {},
-        onSkip: {},
-        onPrimaryRoutesComplete: {
-            isLoading = false
-        },
-        primaryRouteDestination: { route in
-            GreetPrimaryRoutePreviewDestination(route: route)
-        })
-        .greetBackground(.animatedGradient())
+        onPrimary: { isLoading.toggle() },
+        onSkip: {})
+        .greetBackground(.softGradient)
 }
 
 #Preview("Greet Stress") {
@@ -837,33 +599,5 @@ private struct StressGreetPreviewContent: GreetContent {
         .frame(width: 320, height: 760)
         .preferredColorScheme(.dark)
         .dynamicTypeSize(.accessibility2)
-}
-
-private struct GreetPrimaryRoutePreviewDestination: View {
-    let route: GreetPrimaryRoute
-
-    var body: some View {
-        VStack(spacing: Tokens.Spacing.large) {
-            Image(systemName: "sparkles.rectangle.stack.fill")
-                .resizable()
-                .scaledToFit()
-                .symbolRenderingMode(.hierarchical)
-                .frame(width: 72, height: 72)
-                .foregroundStyle(.tint)
-                .accessibilityHidden(true)
-
-            Text(self.route.id)
-                .font(.title2.weight(.bold))
-                .multilineTextAlignment(.center)
-
-            Text("The primary button slides through chained follow-up routes inside the same sheet.")
-                .font(.body)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-        }
-        .frame(maxWidth: Tokens.Layout.contentMaxWidth)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(Tokens.Spacing.large)
-    }
 }
 #endif
