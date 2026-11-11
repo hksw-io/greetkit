@@ -10,6 +10,10 @@ import SwiftUI
 /// under the footer's fade by itself. Buttons in the footer take the tint from the environment, so
 /// set the brand colour with SwiftUI's own `tint(_:)`.
 ///
+/// The title and footer do not scroll with the content, so where height is short, at large text
+/// sizes or on an iPhone in landscape, the title gives way first: it scrolls in a shorter band and
+/// the content keeps room for at least two list rows.
+///
 /// The page presents, dismisses and animates nothing. The app owns all of that.
 public struct GreetPage<Content: View, Footer: View>: View {
     let title: Text
@@ -18,9 +22,12 @@ public struct GreetPage<Content: View, Footer: View>: View {
     let footer: Footer
     private var background: GreetBackground = .system
 
-    @ScaledMetric(relativeTo: .body) private var contentSpacing: CGFloat = Tokens.Platform.contentSpacing
-    @ScaledMetric(relativeTo: .body) private var topPadding: CGFloat = Tokens.Platform.topPadding
-    @ScaledMetric(relativeTo: .body) private var bottomPadding: CGFloat = Tokens.Platform.bottomPadding
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+
+    // Unlike `GreetView`'s, the gaps around the title do not grow with the text size. Here they
+    // are not scrolled away, so every point they grew by came out of the content.
+    @ScaledMetric(relativeTo: .body) private var minimumContentHeight: CGFloat =
+        Tokens.Layout.pageMinimumContentHeight
 
     /// - Parameters:
     ///   - title: Shown centred at the top, and exposed to VoiceOver as a header.
@@ -40,13 +47,25 @@ public struct GreetPage<Content: View, Footer: View>: View {
     }
 
     public var body: some View {
-        VStack(spacing: self.contentSpacing) {
-            GreetTitleBlock(title: self.title, subtitle: self.subtitle)
-                .textSelection(.enabled)
-                .frame(maxWidth: Tokens.Layout.contentMaxWidth)
-                .frame(maxWidth: .infinity)
-                .greetHorizontalPadding()
-                .padding(.top, self.topPadding)
+        // The gap under the title starts inside its scroll view, so that the fade at the bottom of
+        // the scroll view only ever falls on the gap while the title has its full height.
+        GreetPageLayout(
+            spacing: max(0, self.contentSpacing - Tokens.Layout.footerFadeHeight),
+            minimumContentHeight: self.minimumContentHeight + Tokens.Platform.bottomPadding)
+        {
+            // Scrolls only once the layout gives it less than its full height, and then fades out
+            // at the bottom like the content does above the footer, rather than being cut off.
+            ScrollView(.vertical) {
+                GreetTitleBlock(title: self.title, subtitle: self.subtitle)
+                    .textSelection(.enabled)
+                    .frame(maxWidth: Tokens.Layout.contentMaxWidth)
+                    .frame(maxWidth: .infinity)
+                    .greetHorizontalPadding()
+                    .padding(.top, self.topPadding)
+                    .padding(.bottom, Tokens.Layout.footerFadeHeight)
+            }
+            .scrollBounceBehavior(.basedOnSize)
+            .mask { GreetFooterFade() }
 
             // The bottom padding joins the safe area rather than shrinking the slot. Fixed content
             // stops above it either way, but a scroll view scrolls through the fade and rests
@@ -55,7 +74,7 @@ public struct GreetPage<Content: View, Footer: View>: View {
                 .frame(maxWidth: Tokens.Layout.contentMaxWidth)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 .greetHorizontalPadding()
-                .safeAreaPadding(.bottom, self.bottomPadding)
+                .safeAreaPadding(.bottom, Tokens.Platform.bottomPadding)
         }
         .greetScrollIndicators()
         .mask { GreetFooterFade() }
@@ -76,11 +95,66 @@ public struct GreetPage<Content: View, Footer: View>: View {
         }
     }
 
+    /// An iPhone in landscape has too little height for the welcome screen's generous gaps.
+    private var isCompactHeight: Bool {
+        self.verticalSizeClass == .compact
+    }
+
+    private var topPadding: CGFloat {
+        self.isCompactHeight ? Tokens.Spacing.large : Tokens.Platform.topPadding
+    }
+
+    private var contentSpacing: CGFloat {
+        self.isCompactHeight ? Tokens.Spacing.large : Tokens.Platform.contentSpacing
+    }
+
     /// Sets the surface drawn behind the page, edge to edge. Defaults to `.system`.
     public func greetBackground(_ background: GreetBackground) -> Self {
         var view = self
         view.background = background
         return view
+    }
+}
+
+/// Stacks a page's header over its content, and lets the header give way when both do not fit.
+///
+/// The header gets its full height while the content keeps `minimumContentHeight`. Past that it
+/// shrinks and scrolls, but never below a quarter of the height, so the title stays in reach.
+struct GreetPageLayout: Layout {
+    let spacing: CGFloat
+    let minimumContentHeight: CGFloat
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        proposal.replacingUnspecifiedDimensions()
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        guard subviews.count == 2 else { return }
+        let header = subviews[0]
+        let content = subviews[1]
+
+        let idealHeaderHeight = header.sizeThatFits(ProposedViewSize(width: bounds.width, height: nil)).height
+        let headerHeight = Self.headerHeight(
+            ideal: idealHeaderHeight,
+            available: bounds.height,
+            spacing: self.spacing,
+            minimumContentHeight: self.minimumContentHeight)
+        let contentTop = headerHeight + self.spacing
+
+        header.place(at: bounds.origin, proposal: ProposedViewSize(width: bounds.width, height: headerHeight))
+        content.place(
+            at: CGPoint(x: bounds.minX, y: bounds.minY + contentTop),
+            proposal: ProposedViewSize(width: bounds.width, height: max(0, bounds.height - contentTop)))
+    }
+
+    static func headerHeight(
+        ideal: CGFloat,
+        available: CGFloat,
+        spacing: CGFloat,
+        minimumContentHeight: CGFloat) -> CGFloat
+    {
+        let floor = min(ideal, available / 4)
+        return min(ideal, max(available - spacing - minimumContentHeight, floor))
     }
 }
 

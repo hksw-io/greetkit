@@ -19,6 +19,9 @@ enum Tokens {
         static let compactHorizontalPadding: CGFloat = 16
         static let regularHorizontalPadding: CGFloat = 24
         static let footerControlSpacing: CGFloat = Spacing.medium
+        /// What a `GreetPage` keeps for the app's content before its title starts to give way: two
+        /// list rows and the list's own top margin.
+        static let pageMinimumContentHeight: CGFloat = 100
         /// How far above the footer scrolling content fades out. No taller than the content's
         /// bottom padding, so content resting at the end of the scroll view is never faded.
         static let footerFadeHeight: CGFloat = 20

@@ -167,8 +167,11 @@ GreetPage(title: Text("Daily Reminder"), subtitle: Text("Choose when to be remin
 .tint(.indigo)
 ```
 
-- The title and optional subtitle sit centred at the top and do not scroll. The title is a
-  VoiceOver header and takes VoiceOver focus when the page appears.
+- The title and optional subtitle sit centred at the top and do not scroll with the content. The
+  title is a VoiceOver header and takes VoiceOver focus when the page appears. Where height is
+  short, at large text sizes or on an iPhone in landscape, the title gives way first: it scrolls in
+  a shorter band, never under a quarter of the height, so the content keeps room for at least two
+  list rows. The gaps around the title stay the same at every text size and tighten in landscape.
 - The content is placed as given, with no scroll view around it, at most 560 pt wide and inside the
   welcome screen's side padding. A `List`, `Form` or `ScrollView` there scrolls by itself, fades out
   above the footer and rests clear of the fade at its end. An inset-grouped `List` adds its own
