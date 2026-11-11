@@ -11,9 +11,6 @@ public struct GreetView<Content: GreetContent>: View {
     let onSkip: () -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
-    @Environment(\.colorSchemeContrast) private var colorSchemeContrast
-    @Environment(\.colorScheme) private var colorScheme
     @State private var featuresVisible = false
 
     @ScaledMetric(relativeTo: .largeTitle) private var iconSize: CGFloat = Tokens.Platform.iconSize
