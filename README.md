@@ -50,7 +50,7 @@ See [CHANGELOG.md](CHANGELOG.md) for what changed between releases.
 
 ## Usage
 
-Implement `GreetContent` with your app's strings and icon, then drive the view with bindings and callbacks:
+Implement `GreetContent` with your app's strings and icon, then drive the view with state and callbacks:
 
 ```swift
 import SwiftUI
@@ -83,12 +83,19 @@ struct RootView: View {
     var body: some View {
         GreetView(
             content: MyGreet(),
-            isLoading: $isLoading,
+            isLoading: isLoading,
             errorMessage: $errorMessage,
             onPrimary: { /* start setup, or mark the welcome seen and dismiss */ },
             onSkip: { /* mark the welcome seen and dismiss */ })
     }
 }
+```
+
+Only `content` and `onPrimary` are required. An app with no loading state, no error to show and no
+skip button leaves the rest out:
+
+```swift
+GreetView(content: MyGreet(), onPrimary: { dismiss() })
 ```
 
 Required: `title`, `features`, `primaryButtonText`, `errorAlertTitle`, and `errorOKText`.
@@ -164,12 +171,7 @@ GreetPage(title: Text("Daily Reminder"), subtitle: Text("Choose when to be remin
 The default background is the system sheet surface. Use `greetBackground(_:)` when an app needs a more branded first-run experience:
 
 ```swift
-GreetView(
-    content: MyGreet(),
-    isLoading: $isLoading,
-    errorMessage: $errorMessage,
-    onPrimary: {},
-    onSkip: {})
+GreetView(content: MyGreet(), onPrimary: {})
     .greetBackground(.softGradient(brand: .indigo))
     .tint(.indigo)
 ```
@@ -207,10 +209,10 @@ Text roles are deliberately not overridable. Title, subtitle, feature rows, and 
 The view is purely presentational:
 
 - Give every `GreetFeatureItem` a stable `id`. The IDs preserve SwiftUI identity.
-- `isLoading: Binding<Bool>` — when `true`, the primary button shows a progress spinner and both buttons are disabled (below, right).
-- `errorMessage: Binding<String?>` — when non-nil, the view presents an alert. Setting it back to `nil` (or letting the user tap the OK button) dismisses the alert.
+- `isLoading: Bool` — defaults to `false`. When `true`, the primary button shows a progress spinner and both buttons are disabled (below, right). The view only reads it.
+- `errorMessage: Binding<String?>` — defaults to a constant `nil`. When non-nil, the view presents an alert. Setting it back to `nil` (or letting the user tap the OK button) dismisses the alert.
 - `allowsInteractiveDismissal` — defaults to `true`. Set it to `false` only for setup flows that must block swipe or window dismissal.
-- `onPrimary` / `onSkip` — fired on tap. Your state layer handles the rest.
+- `onPrimary` / `onSkip` — fired on tap. Your state layer handles the rest. `onSkip` defaults to doing nothing, for content without a skip button.
 
 <p>
   <img src="Docs/Media/greetkit-ios-soft-light.jpg" width="240" alt="The primary button idle, reading Get started.">

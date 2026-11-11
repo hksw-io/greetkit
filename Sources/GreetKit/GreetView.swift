@@ -3,7 +3,7 @@ import SwiftUI
 
 public struct GreetView<Content: GreetContent>: View {
     let content: Content
-    @Binding var isLoading: Bool
+    let isLoading: Bool
     @Binding var errorMessage: String?
     let allowsInteractiveDismissal: Bool
     private var background: GreetBackground = .system
@@ -26,14 +26,14 @@ public struct GreetView<Content: GreetContent>: View {
 
     public init(
         content: Content,
-        isLoading: Binding<Bool>,
-        errorMessage: Binding<String?>,
+        isLoading: Bool = false,
+        errorMessage: Binding<String?> = .constant(nil),
         allowsInteractiveDismissal: Bool = true,
         onPrimary: @escaping () -> Void,
-        onSkip: @escaping () -> Void)
+        onSkip: @escaping () -> Void = {})
     {
         self.content = content
-        self._isLoading = isLoading
+        self.isLoading = isLoading
         self._errorMessage = errorMessage
         self.allowsInteractiveDismissal = allowsInteractiveDismissal
         self.onPrimary = onPrimary
@@ -582,20 +582,16 @@ private struct StressGreetPreviewContent: GreetContent {
 
     GreetView(
         content: GreetPreviewContent(),
-        isLoading: $isLoading,
+        isLoading: isLoading,
         errorMessage: $errorMessage,
-        onPrimary: { isLoading.toggle() },
-        onSkip: {})
+        onPrimary: { isLoading.toggle() })
         .greetBackground(.softGradient)
 }
 
 #Preview("Greet Stress") {
     GreetView(
         content: StressGreetPreviewContent(),
-        isLoading: .constant(false),
-        errorMessage: .constant(nil),
-        onPrimary: {},
-        onSkip: {})
+        onPrimary: {})
         .frame(width: 320, height: 760)
         .preferredColorScheme(.dark)
         .dynamicTypeSize(.accessibility2)

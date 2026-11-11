@@ -22,10 +22,7 @@ struct GreetPageTests {
         func pageAsksForTheWelcomeSheetSizeOnMac() {
             let welcome = NSHostingView(rootView: GreetView(
                 content: PageTestContent(),
-                isLoading: .constant(false),
-                errorMessage: .constant(nil),
-                onPrimary: {},
-                onSkip: {}))
+                onPrimary: {}))
             let page = NSHostingView(rootView: Self.page(subtitle: nil))
 
             #expect(page.fittingSize == welcome.fittingSize)

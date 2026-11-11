@@ -32,6 +32,11 @@ All notable changes to GreetKit are recorded here. The format follows
 
 ### Changed
 
+- **Breaking.** `GreetView`'s `isLoading` is a plain `Bool` instead of a `Binding<Bool>`. The view
+  never wrote to it, so apps had to wrap a value in a binding. Pass `isLoading: isLoading` instead
+  of `isLoading: $isLoading`, and drop `.constant(false)`.
+- `isLoading` defaults to `false`, `errorMessage` to `.constant(nil)` and `onSkip` to `{}`, so an
+  app with no loading state, error or skip button passes only `content` and `onPrimary`.
 - `GreetBackground` is `Sendable`, now that it no longer stores a closure.
 
 ## [3.1.0] - 2026-10-05

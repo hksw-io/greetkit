@@ -13,13 +13,23 @@ struct GreetViewTests {
     func viewConstructsAcrossItsFullSurface() {
         _ = GreetView(
             content: RichContent(),
-            isLoading: .constant(true),
+            isLoading: true,
             errorMessage: .constant("Network offline"),
             allowsInteractiveDismissal: false,
             onPrimary: {},
             onSkip: {})
             .greetBackground(.softGradient(brand: .orange))
             .tint(.indigo)
+    }
+
+    /// An app with no loading state, no error and no skip button passes none of them.
+    @Test
+    func viewNeedsOnlyContentAndThePrimaryAction() {
+        let view = GreetView(content: RichContent(), onPrimary: {})
+
+        #expect(!view.isLoading)
+        #expect(view.errorMessage == nil)
+        #expect(view.allowsInteractiveDismissal)
     }
 
     @Test
