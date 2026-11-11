@@ -106,13 +106,18 @@ public struct GreetView<Content: GreetContent>: View {
                     Text(message)
                 }
             })
-        .interactiveDismissDisabled(!self.allowsInteractiveDismissal)
+        .interactiveDismissDisabled(self.blocksInteractiveDismissal)
     }
 
     public func greetBackground(_ background: GreetBackground) -> Self {
         var view = self
         view.background = background
         return view
+    }
+
+    /// A swipe is one more way to skip, so it is blocked while loading, as Skip and Escape are.
+    var blocksInteractiveDismissal: Bool {
+        !self.allowsInteractiveDismissal || self.isLoading
     }
 
     private func performPrimaryAction() {

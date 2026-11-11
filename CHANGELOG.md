@@ -44,6 +44,9 @@ All notable changes to GreetKit are recorded here. The format follows
 
 ### Fixed
 
+- A swipe can no longer dismiss the sheet while `isLoading` is `true`. Skip and Escape were
+  already disabled then, but `interactiveDismissDisabled` only looked at
+  `allowsInteractiveDismissal`.
 - On macOS the scroller no longer fades out with the content above the footer. The fade leaves a
   16 pt strip at the trailing edge opaque, as ReleaseKit does.
 - Content no longer shifts sideways right after the welcome screen appears. The side padding was

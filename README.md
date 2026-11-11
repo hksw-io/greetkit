@@ -211,7 +211,7 @@ The view is purely presentational:
 - Give every `GreetFeatureItem` a stable `id`. The IDs preserve SwiftUI identity.
 - `isLoading: Bool` — defaults to `false`. When `true`, the primary button shows a progress spinner and both buttons are disabled (below, right). The view only reads it.
 - `errorMessage: Binding<String?>` — defaults to a constant `nil`. When non-nil, the view presents an alert. Setting it back to `nil` (or letting the user tap the OK button) dismisses the alert.
-- `allowsInteractiveDismissal` — defaults to `true`. Set it to `false` only for setup flows that must block swipe or window dismissal.
+- `allowsInteractiveDismissal` — defaults to `true`. Set it to `false` only for setup flows that must block swipe or window dismissal. While `isLoading` is `true` the swipe is blocked either way, as Skip and Escape are.
 - `onPrimary` / `onSkip` — fired on tap. Your state layer handles the rest. `onSkip` defaults to doing nothing, for content without a skip button.
 
 <p>

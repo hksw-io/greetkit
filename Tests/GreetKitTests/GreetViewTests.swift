@@ -32,6 +32,19 @@ struct GreetViewTests {
         #expect(view.allowsInteractiveDismissal)
     }
 
+    /// Skip and Escape are disabled while loading. A swipe that dismissed the sheet mid-load would
+    /// get around both.
+    @Test
+    func interactiveDismissalIsBlockedWhileLoading() {
+        let idle = GreetView(content: RichContent(), onPrimary: {})
+        let loading = GreetView(content: RichContent(), isLoading: true, onPrimary: {})
+        let blocking = GreetView(content: RichContent(), allowsInteractiveDismissal: false, onPrimary: {})
+
+        #expect(!idle.blocksInteractiveDismissal)
+        #expect(loading.blocksInteractiveDismissal)
+        #expect(blocking.blocksInteractiveDismissal)
+    }
+
     @Test
     func featureInitializerStoresStableID() {
         let feature = GreetFeatureItem(
