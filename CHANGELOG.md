@@ -56,6 +56,9 @@ All notable changes to GreetKit are recorded here. The format follows
   title, its gaps and the footer did not scroll, so on an iPhone 17 Pro the content got no height at
   all at AX5 and about one list row in landscape. The title now gives way and scrolls in a shorter
   band, its gaps no longer grow with the text size, and they tighten in landscape.
+- A touch below a `GreetPage` footer, over the home indicator, no longer reaches a list row hidden
+  under the footer. A scroll view in the content runs on under the footer and the home indicator,
+  and the fade hid those rows from sight but not from touch.
 - A swipe can no longer dismiss the sheet while `isLoading` is `true`. Skip and Escape were
   already disabled then, but `interactiveDismissDisabled` only looked at
   `allowsInteractiveDismissal`.

@@ -75,6 +75,11 @@ public struct GreetPage<Content: View, Footer: View>: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 .greetHorizontalPadding()
                 .safeAreaPadding(.bottom, Tokens.Platform.bottomPadding)
+                // A scroll view here runs on under the footer and the home indicator, where the
+                // fade hides it. A mask does not stop touches, and the footer only takes the ones
+                // inside its own frame, so a touch below it reached rows nobody could see. Taking
+                // the content's touches only inside its slot stops that.
+                .contentShape(.rect)
         }
         .greetScrollIndicators()
         .mask { GreetFooterFade() }
