@@ -56,27 +56,29 @@ struct LayoutAndMotionTests {
         #endif
     }
 
+    /// The padding follows the horizontal size class, which is known on the first layout pass. It
+    /// used to follow a measured width, which arrived a pass late: phones wider than the old
+    /// breakpoint started at the compact padding and jumped to the regular one.
     @Test
-    func theBreakpointItselfCountsAsCompact() {
-        #expect(Tokens.Layout.isCompact(width: Tokens.Layout.compactWidthBreakpoint))
-        #expect(!Tokens.Layout.isCompact(width: Tokens.Layout.compactWidthBreakpoint + 1))
+    @MainActor
+    func horizontalPaddingFollowsTheSizeClass() {
+        #expect(Self.paddedWidth(in: .compact) == 100 + 2 * Tokens.Layout.compactHorizontalPadding)
+        #expect(Self.paddedWidth(in: .regular) == 100 + 2 * Tokens.Layout.regularHorizontalPadding)
     }
 
-    /// The container width arrives one layout pass late, from an `onGeometryChange` observer.
-    /// The seeded value has to land in the same padding bucket the measured pass will, or the
-    /// content reflows and rewraps underneath the feature reveal.
-    @Test
-    func assumedContainerWidthMatchesTheMeasuredPadding() {
-        let assumed = Tokens.Layout.isCompact(width: Tokens.Platform.assumedContainerWidth)
+    @MainActor
+    private static func paddedWidth(in sizeClass: UserInterfaceSizeClass) -> CGFloat {
+        let view = Color.clear
+            .frame(width: 100, height: 10)
+            .greetHorizontalPadding()
+            .environment(\.horizontalSizeClass, sizeClass)
+            .dynamicTypeSize(.large)
 
         #if os(macOS)
-            // Every Mac sheet is at least sheetMinWidth, which is past the breakpoint.
-            #expect(!assumed)
-            #expect(assumed == Tokens.Layout.isCompact(width: Tokens.Platform.sheetMinWidth))
+            return NSHostingView(rootView: view).fittingSize.width
         #else
-            // A phone-width sheet sits at or under the breakpoint.
-            #expect(assumed)
-            #expect(assumed == Tokens.Layout.isCompact(width: Tokens.Layout.compactWidthBreakpoint))
+            return UIHostingController(rootView: view)
+                .sizeThatFits(in: CGSize(width: 1000, height: 1000)).width
         #endif
     }
 
@@ -115,14 +117,12 @@ struct LayoutAndMotionTests {
         #expect(Tokens.Layout.footerBottomPadding < Tokens.Layout.footerTopPadding)
     }
 
-    /// The Mac floor is a window shape, not a phone shape: wider than it is tall, and past the
-    /// compact breakpoint so a Mac sheet never lands on the iPhone padding. iOS sets no floor —
-    /// the presentation owns the size there.
+    /// The Mac floor is a window shape, not a phone shape: wider than it is tall. iOS sets no
+    /// floor — the presentation owns the size there.
     #if os(macOS)
         @Test
         func macSheetMinimumsAreWindowShaped() {
             #expect(Tokens.Platform.sheetMinWidth > Tokens.Platform.sheetMinHeight)
-            #expect(Tokens.Platform.sheetMinWidth > Tokens.Layout.compactWidthBreakpoint)
             #expect(Tokens.Platform.sheetIdealWidth >= Tokens.Platform.sheetMinWidth)
             #expect(Tokens.Platform.sheetIdealHeight >= Tokens.Platform.sheetMinHeight)
         }

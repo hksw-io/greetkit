@@ -38,6 +38,15 @@ All notable changes to GreetKit are recorded here. The format follows
 - `isLoading` defaults to `false`, `errorMessage` to `.constant(nil)` and `onSkip` to `{}`, so an
   app with no loading state, error or skip button passes only `content` and `onPrimary`.
 - `GreetBackground` is `Sendable`, now that it no longer stores a closure.
+- The side padding follows the horizontal size class instead of a 390 pt width breakpoint: 16 pt
+  when compact, 24 pt when regular, as in ReleaseKit. iPhones wider than 390 pt in portrait and an
+  iPad form sheet now get 16 pt where they had 24 pt.
+
+### Fixed
+
+- Content no longer shifts sideways right after the welcome screen appears. The side padding was
+  chosen from a width measured one layout pass late, so iPhones 393 pt and wider started at 16 pt
+  and jumped to 24 pt.
 
 ## [3.1.0] - 2026-10-05
 

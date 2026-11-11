@@ -15,7 +15,6 @@ public struct GreetView<Content: GreetContent>: View {
     @Environment(\.colorSchemeContrast) private var colorSchemeContrast
     @Environment(\.colorScheme) private var colorScheme
     @State private var featuresVisible = false
-    @State private var containerWidth: CGFloat = Tokens.Platform.assumedContainerWidth
 
     @ScaledMetric(relativeTo: .largeTitle) private var iconSize: CGFloat = Tokens.Platform.iconSize
     @ScaledMetric(relativeTo: .body) private var featureIconSize: CGFloat = Tokens.Platform.featureIconSize
@@ -61,7 +60,7 @@ public struct GreetView<Content: GreetContent>: View {
             .textSelection(.enabled)
             .frame(maxWidth: Tokens.Layout.contentMaxWidth)
             .frame(maxWidth: .infinity)
-            .greetHorizontalPadding(containerWidth: self.containerWidth)
+            .greetHorizontalPadding()
             .padding(.top, self.topPadding)
             .padding(.bottom, self.bottomPadding)
         }
@@ -78,11 +77,10 @@ public struct GreetView<Content: GreetContent>: View {
                 onPrimary: self.performPrimaryAction,
                 onSkip: self.onSkip)
                 .frame(maxWidth: Tokens.Layout.contentMaxWidth)
-                .greetHorizontalPadding(containerWidth: self.containerWidth)
+                .greetHorizontalPadding()
                 .frame(maxWidth: .infinity)
         }
         .scrollEdgeEffectHidden(true, for: .bottom)
-        .greetContainerWidth(self.$containerWidth)
         .greetSheetSizing()
         .onAppear {
             self.featuresVisible = true
@@ -400,11 +398,14 @@ private struct GreetFooterSection<Content: GreetContent>: View {
     }
 }
 
-/// Applies the compact or regular horizontal padding for a container width.
+/// Applies the compact or regular horizontal padding for the horizontal size class.
+///
+/// The size class is known on the first layout pass, so nothing has to be measured and the content
+/// never reflows after it appears. A Mac window is always regular.
 ///
 /// Lives in a modifier so the two `@ScaledMetric` values behind it are declared once.
 struct GreetHorizontalPadding: ViewModifier {
-    let containerWidth: CGFloat
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     @ScaledMetric(relativeTo: .body) private var compactPadding: CGFloat = Tokens.Layout.compactHorizontalPadding
     @ScaledMetric(relativeTo: .body) private var regularPadding: CGFloat = Tokens.Layout.regularHorizontalPadding
@@ -413,15 +414,13 @@ struct GreetHorizontalPadding: ViewModifier {
         content
             .padding(
                 .horizontal,
-                Tokens.Layout.isCompact(width: self.containerWidth)
-                    ? self.compactPadding
-                    : self.regularPadding)
+                self.horizontalSizeClass == .compact ? self.compactPadding : self.regularPadding)
     }
 }
 
 extension View {
-    func greetHorizontalPadding(containerWidth: CGFloat) -> some View {
-        self.modifier(GreetHorizontalPadding(containerWidth: containerWidth))
+    func greetHorizontalPadding() -> some View {
+        self.modifier(GreetHorizontalPadding())
     }
 
     /// The skip action's label: body text across the full width, with the platform's minimum
@@ -455,18 +454,6 @@ extension View {
         #else
             self.scrollIndicators(.never, axes: .vertical)
         #endif
-    }
-
-    /// Publishes the receiver's width so `greetHorizontalPadding(containerWidth:)` can pick a
-    /// breakpoint without a `GeometryReader` claiming the offered size.
-    func greetContainerWidth(_ width: Binding<CGFloat>) -> some View {
-        self.onGeometryChange(for: CGFloat.self) { geometry in
-            geometry.size.width
-        } action: { newWidth in
-            if width.wrappedValue != newWidth {
-                width.wrappedValue = newWidth
-            }
-        }
     }
 
     /// Confirms the primary action with a light impact on iOS.

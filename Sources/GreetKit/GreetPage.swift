@@ -18,8 +18,6 @@ public struct GreetPage<Content: View, Footer: View>: View {
     let footer: Footer
     private var background: GreetBackground = .system
 
-    @State private var containerWidth: CGFloat = Tokens.Platform.assumedContainerWidth
-
     @ScaledMetric(relativeTo: .body) private var contentSpacing: CGFloat = Tokens.Platform.contentSpacing
     @ScaledMetric(relativeTo: .body) private var topPadding: CGFloat = Tokens.Platform.topPadding
     @ScaledMetric(relativeTo: .body) private var bottomPadding: CGFloat = Tokens.Platform.bottomPadding
@@ -47,7 +45,7 @@ public struct GreetPage<Content: View, Footer: View>: View {
                 .textSelection(.enabled)
                 .frame(maxWidth: Tokens.Layout.contentMaxWidth)
                 .frame(maxWidth: .infinity)
-                .greetHorizontalPadding(containerWidth: self.containerWidth)
+                .greetHorizontalPadding()
                 .padding(.top, self.topPadding)
 
             // The bottom padding joins the safe area rather than shrinking the slot. Fixed content
@@ -56,7 +54,7 @@ public struct GreetPage<Content: View, Footer: View>: View {
             self.content
                 .frame(maxWidth: Tokens.Layout.contentMaxWidth)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                .greetHorizontalPadding(containerWidth: self.containerWidth)
+                .greetHorizontalPadding()
                 .safeAreaPadding(.bottom, self.bottomPadding)
         }
         .greetScrollIndicators()
@@ -68,11 +66,10 @@ public struct GreetPage<Content: View, Footer: View>: View {
             .padding(.top, Tokens.Layout.footerTopPadding)
             .padding(.bottom, Tokens.Layout.footerBottomPadding)
             .frame(maxWidth: Tokens.Layout.contentMaxWidth)
-            .greetHorizontalPadding(containerWidth: self.containerWidth)
+            .greetHorizontalPadding()
             .frame(maxWidth: .infinity)
         }
         .scrollEdgeEffectHidden(true, for: .bottom)
-        .greetContainerWidth(self.$containerWidth)
         .greetSheetSizing()
         .background {
             GreetBackgroundView(background: self.background)
