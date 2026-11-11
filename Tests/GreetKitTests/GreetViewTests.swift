@@ -19,7 +19,21 @@ struct GreetViewTests {
             onPrimary: {},
             onSkip: {})
             .greetBackground(.softGradient(brand: .orange))
+            .greetFittedSheet()
             .tint(.indigo)
+    }
+
+    /// The fitted height follows the content, except that a Mac sheet never lays out shorter than
+    /// its floor, so offering less would clip the footer.
+    @Test
+    func fittedSheetFollowsContentAboveTheMacFloor() {
+        #expect(GreetFittedSheet.idealHeight(for: 900) == 900)
+
+        #if os(macOS)
+            #expect(GreetFittedSheet.idealHeight(for: 100) == Tokens.Platform.sheetMinHeight)
+        #else
+            #expect(GreetFittedSheet.idealHeight(for: 100) == 100)
+        #endif
     }
 
     /// An app with no loading state, no error and no skip button passes none of them.

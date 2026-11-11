@@ -15,6 +15,11 @@ All notable changes to GreetKit are recorded here. The format follows
   SwiftUI `tint(_:)`, and animates nothing.
 - `GreetSkipButtonStyle`, applied with `.buttonStyle(.greetSkip)`, so a second action in a
   `GreetPage` footer matches the welcome screen's skip button.
+- `greetFittedSheet()`, a view modifier that sizes the presentation to the welcome content: the
+  sheet's only detent on iPhone, a fitted sheet on iPad and Mac, and the ideal height for a hosting
+  controller that uses `preferredContentSize`. It replaces the wrappers Swiftflip and Brevier each
+  wrote, one of which copied the kit's private 420 pt Mac floor. ReleaseKit ships the same modifier
+  as `releaseFittedSheet()`.
 
 ### Removed
 

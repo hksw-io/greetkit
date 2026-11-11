@@ -115,6 +115,22 @@ minimum:
 }
 ```
 
+### Fitting the sheet to its content
+
+By default the presentation picks the sheet's height: full height on iPhone, a fixed form on iPad, the 560×520 pt ideal size on Mac. `greetFittedSheet()` sizes it to the welcome content instead, so a few features get a short sheet and a longer list gets the room it needs without scrolling:
+
+```swift
+.sheet(isPresented: $showingGreet) {
+    GreetView(content: MyGreet(), onPrimary: { showingGreet = false })
+        .greetBackground(.softGradient)
+        .greetFittedSheet()
+}
+```
+
+It is a general view modifier, so apply it after `greetBackground(_:)`. The height is the scrolling content plus the pinned footer. On iPhone it becomes the sheet's only detent, on iPad and Mac the sheet fits it, and content taller than the screen still gets a full-height sheet and scrolls. On Mac the sheet never goes below its 420 pt floor.
+
+The same height is offered as the view's ideal height, so a `UIHostingController` or `NSHostingController` with `sizingOptions = .preferredContentSize` fits too. ReleaseKit ships the same modifier as `releaseFittedSheet()`. It is for `GreetView`, not `GreetPage`, whose title sits outside whatever scrolls in its content.
+
 The view has one screen. For setup steps that follow the welcome, build each screen in the app
 with [`GreetPage`](#follow-up-pages) and present it yourself.
 
