@@ -6,6 +6,16 @@ All notable changes to GreetKit are recorded here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- `GreetPage`, a page in the welcome screen's look for screens the app builds itself. It draws the
+  same background edge to edge, shows a title and optional subtitle in the same type, places the
+  app's content as given at the same width and side padding, pins a footer with the same paddings
+  and fade, and carries the same Mac sheet size. It takes `greetBackground(_:)` and the ordinary
+  SwiftUI `tint(_:)`, and animates nothing.
+- `GreetSkipButtonStyle`, applied with `.buttonStyle(.greetSkip)`, so a second action in a
+  `GreetPage` footer matches the welcome screen's skip button.
+
 ## [3.1.0] - 2026-10-05
 
 ### Changed

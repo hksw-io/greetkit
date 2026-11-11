@@ -167,6 +167,50 @@ returns to the welcome title when the overview reappears.
 
 GreetKit does not include a separate "next steps" card/list primitive. If the primary button should continue into setup, model that as a route chain; if the app needs additional cards, build them in the consuming app or in the destination views.
 
+## Follow-up pages
+
+`GreetPage` gives a screen the app builds itself the welcome screen's look: the same background,
+title type, paddings, pinned footer and Mac sheet size. Use it for a step that follows the welcome,
+such as a permission request or a choice of settings.
+
+```swift
+GreetPage(title: Text("Daily Reminder"), subtitle: Text("Choose when to be reminded to study.")) {
+    List {
+        Toggle("Remind Me", isOn: $remindsDaily)
+        DatePicker("Time", selection: $reminderTime, displayedComponents: .hourAndMinute)
+    }
+    .scrollContentBackground(.hidden)
+} footer: {
+    Button("Continue", action: saveReminder)
+        .buttonStyle(.glassProminent)
+        .buttonBorderShape(.capsule)
+        .buttonSizing(.flexible)
+        .controlSize(.large)
+    Button("Not Now", action: skipReminder)
+        .buttonStyle(.greetSkip)
+}
+.greetBackground(.softGradient)
+.tint(.indigo)
+```
+
+- The title and optional subtitle sit centred at the top and do not scroll. The title is a
+  VoiceOver header and takes VoiceOver focus when the page appears.
+- The content is placed as given, with no scroll view around it, at most 560 pt wide and inside the
+  welcome screen's side padding. A `List`, `Form` or `ScrollView` there scrolls by itself, fades out
+  above the footer and rests clear of the fade at its end. An inset-grouped `List` adds its own
+  margins inside that padding.
+- The footer is pinned to the bottom with the welcome screen's paddings, and its controls are
+  stacked with the welcome screen's spacing. `.buttonStyle(.greetSkip)` gives a second action the
+  look of the skip button: body text in the tint color, with the platform's minimum control height.
+  The primary button above uses the same system modifiers as the welcome screen's.
+- `greetBackground(_:)` is a method on `GreetPage`, so apply it before any other modifier. Controls
+  take their color from SwiftUI's `tint(_:)`. The built-in gradients do not read the tint: pass
+  `brand:` or they use `.blue`.
+- On macOS the page carries the same 480×420 pt minimum and 560×520 pt ideal size as `GreetView`,
+  so a sheet that follows the welcome sheet opens at the same size.
+- The page presents, dismisses and animates nothing. The app decides how it appears: as a sheet, or
+  as a full-screen overlay.
+
 ## Backgrounds
 
 The default background is the system sheet surface. Use `greetBackground(_:)` when an app needs a more branded first-run experience:

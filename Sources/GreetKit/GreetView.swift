@@ -168,14 +168,7 @@ public struct GreetView<Content: GreetContent>: View {
         // Content fades out just above the footer rather than meeting a dividing line. The scroll
         // view's bounds end where the footer begins, so the mask needs no measuring. It reaches up
         // through the top safe area so content can still scroll under the status bar.
-        .mask {
-            VStack(spacing: 0) {
-                Rectangle()
-                LinearGradient(colors: [.black, .clear], startPoint: .top, endPoint: .bottom)
-                    .frame(height: Tokens.Layout.footerFadeHeight)
-            }
-            .ignoresSafeArea(edges: .top)
-        }
+        .mask { GreetFooterFade() }
         .safeAreaBar(edge: .bottom) {
             GreetFooterSection(
                 content: self.content,
@@ -248,7 +241,7 @@ public struct GreetView<Content: GreetContent>: View {
 /// It reads the accessibility environment itself. `GreetView` reads the same values for the
 /// feature reveal and the route transitions, but forwarding them here as well made six stored
 /// properties out of what is really two inputs.
-private struct GreetBackgroundView: View {
+struct GreetBackgroundView: View {
     let background: GreetBackground
     let brandColor: Color?
 
@@ -342,8 +335,6 @@ private struct GreetHeaderSection<Content: GreetContent>: View {
     let content: Content
     let iconSize: CGFloat
 
-    @AccessibilityFocusState(for: .voiceOver) private var titleFocused: Bool
-
     var body: some View {
         VStack(spacing: Tokens.Spacing.large) {
             if let appIcon = self.content.appIcon {
@@ -359,29 +350,59 @@ private struct GreetHeaderSection<Content: GreetContent>: View {
                     .accessibilityHidden(true)
             }
 
-            VStack(spacing: Tokens.Spacing.small) {
-                self.content.title
-                #if os(macOS)
-                    .font(.title)
-                #else
-                    .font(.largeTitle)
-                #endif
-                    .fontWeight(.bold)
+            GreetTitleBlock(title: self.content.title, subtitle: self.content.subtitle)
+        }
+    }
+}
+
+/// The title and its optional subtitle, in the type and spacing `GreetView` and `GreetPage` share.
+///
+/// VoiceOver lands on the title when it appears, so a screen that replaces another one announces
+/// itself instead of leaving focus on whatever was there before.
+struct GreetTitleBlock: View {
+    let title: Text
+    let subtitle: Text?
+
+    @AccessibilityFocusState(for: .voiceOver) private var titleFocused: Bool
+
+    var body: some View {
+        VStack(spacing: Tokens.Spacing.small) {
+            self.title
+            #if os(macOS)
+                .font(.title)
+            #else
+                .font(.largeTitle)
+            #endif
+                .fontWeight(.bold)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityAddTraits(.isHeader)
+                .accessibilityFocused(self.$titleFocused)
+                .onAppear { self.titleFocused = true }
+
+            if let subtitle = self.subtitle {
+                subtitle
+                    .font(.body)
+                    .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
-                    .accessibilityAddTraits(.isHeader)
-                    .accessibilityFocused(self.$titleFocused)
-                    .onAppear { self.titleFocused = true }
-
-                if let subtitle = self.content.subtitle {
-                    subtitle
-                        .font(.body)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
             }
         }
+    }
+}
+
+/// Fades content out just above the pinned footer rather than meeting a dividing line.
+///
+/// The masked view's bounds end where the footer begins, so the fade needs no measuring. It reaches
+/// up through the top safe area so content can still scroll under the status bar.
+struct GreetFooterFade: View {
+    var body: some View {
+        VStack(spacing: 0) {
+            Rectangle()
+            LinearGradient(colors: [.black, .clear], startPoint: .top, endPoint: .bottom)
+                .frame(height: Tokens.Layout.footerFadeHeight)
+        }
+        .ignoresSafeArea(edges: .top)
     }
 }
 
@@ -588,21 +609,9 @@ private struct GreetFooterSection<Content: GreetContent>: View {
                 Button {
                     self.onSkip()
                 } label: {
-                    skipText
-                        .font(.body)
-                        .multilineTextAlignment(.center)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .frame(
-                            maxWidth: .infinity,
-                            minHeight: Tokens.Platform.minimumControlHeight,
-                            alignment: .top)
-                        .contentShape(Rectangle())
+                    skipText.greetSkipLabel()
                 }
-                .buttonStyle(.plain)
-                // Tinted body text, the way system setup screens style their second action. Small
-                // grey text read as a caption or a disabled control rather than something to tap.
-                .foregroundStyle(.tint)
-                .greetLinkPointer()
+                .greetSkipChrome()
                 .keyboardShortcut(self.allowsCancelShortcut ? .cancelAction : nil)
                 .disabled(self.isLoading)
             }
@@ -615,7 +624,7 @@ private struct GreetFooterSection<Content: GreetContent>: View {
 /// Applies the compact or regular horizontal padding for a container width.
 ///
 /// Lives in a modifier so the two `@ScaledMetric` values behind it are declared once.
-private struct GreetHorizontalPadding: ViewModifier {
+struct GreetHorizontalPadding: ViewModifier {
     let containerWidth: CGFloat
 
     @ScaledMetric(relativeTo: .body) private var compactPadding: CGFloat = Tokens.Layout.compactHorizontalPadding
@@ -631,9 +640,30 @@ private struct GreetHorizontalPadding: ViewModifier {
     }
 }
 
-private extension View {
+extension View {
     func greetHorizontalPadding(containerWidth: CGFloat) -> some View {
         self.modifier(GreetHorizontalPadding(containerWidth: containerWidth))
+    }
+
+    /// The skip action's label: body text across the full width, with the platform's minimum
+    /// control height as its hit area.
+    func greetSkipLabel() -> some View {
+        self.font(.body)
+            .multilineTextAlignment(.center)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(
+                maxWidth: .infinity,
+                minHeight: Tokens.Platform.minimumControlHeight,
+                alignment: .top)
+            .contentShape(Rectangle())
+    }
+
+    /// Tinted body text, the way system setup screens style their second action. Small grey text
+    /// read as a caption or a disabled control rather than something to tap.
+    func greetSkipChrome() -> some View {
+        self.buttonStyle(.plain)
+            .foregroundStyle(.tint)
+            .greetLinkPointer()
     }
 
     /// Hides the scroll indicator on iOS, where the scroll edge effect and a swipe carry the
