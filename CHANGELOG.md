@@ -6,6 +6,8 @@ All notable changes to GreetKit are recorded here. The format follows
 
 ## [Unreleased]
 
+## [3.2.0] - 2026-11-12
+
 ### Added
 
 - `GreetPage`, a page in the welcome screen's look for screens the app builds itself. It draws the
@@ -308,7 +310,10 @@ First tagged release. Everything before this tag was consumed from the `master` 
   Both were already marked deprecated and are removed here rather than after 1.0.0, since no tagged
   release ever shipped them.
 
-[unreleased]: https://github.com/hksw-io/GreetKit/compare/2.0.1...HEAD
+[unreleased]: https://github.com/hksw-io/GreetKit/compare/3.2.0...HEAD
+[3.2.0]: https://github.com/hksw-io/GreetKit/compare/3.1.0...3.2.0
+[3.1.0]: https://github.com/hksw-io/GreetKit/compare/3.0.0...3.1.0
+[3.0.0]: https://github.com/hksw-io/GreetKit/compare/2.0.1...3.0.0
 [2.0.1]: https://github.com/hksw-io/GreetKit/compare/2.0.0...2.0.1
 [2.0.0]: https://github.com/hksw-io/GreetKit/compare/1.0.0...2.0.0
 [1.0.0]: https://github.com/hksw-io/GreetKit/releases/tag/1.0.0
