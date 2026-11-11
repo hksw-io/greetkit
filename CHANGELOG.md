@@ -44,6 +44,8 @@ All notable changes to GreetKit are recorded here. The format follows
 
 ### Fixed
 
+- On macOS the scroller no longer fades out with the content above the footer. The fade leaves a
+  16 pt strip at the trailing edge opaque, as ReleaseKit does.
 - Content no longer shifts sideways right after the welcome screen appears. The side padding was
   chosen from a width measured one layout pass late, so iPhones 393 pt and wider started at 16 pt
   and jumped to 24 pt.

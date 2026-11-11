@@ -193,12 +193,23 @@ struct GreetTitleBlock: View {
 ///
 /// The masked view's bounds end where the footer begins, so the fade needs no measuring. It reaches
 /// up through the top safe area so content can still scroll under the status bar.
+///
+/// A mask applies to everything the scroll view draws, including its indicator, so on macOS the
+/// scroller faded out along with the content. A trailing strip is therefore left opaque. It is
+/// narrower than the side padding, so it spares the scroller without ever holding content.
 struct GreetFooterFade: View {
     var body: some View {
-        VStack(spacing: 0) {
-            Rectangle()
-            LinearGradient(colors: [.black, .clear], startPoint: .top, endPoint: .bottom)
-                .frame(height: Tokens.Layout.footerFadeHeight)
+        HStack(spacing: 0) {
+            VStack(spacing: 0) {
+                Rectangle()
+                LinearGradient(colors: [.black, .clear], startPoint: .top, endPoint: .bottom)
+                    .frame(height: Tokens.Layout.footerFadeHeight)
+            }
+
+            if Tokens.Platform.scrollerGutter > 0 {
+                Rectangle()
+                    .frame(width: Tokens.Platform.scrollerGutter)
+            }
         }
         .ignoresSafeArea(edges: .top)
     }

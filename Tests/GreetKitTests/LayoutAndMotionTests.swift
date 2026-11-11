@@ -96,6 +96,18 @@ struct LayoutAndMotionTests {
         #expect(Tokens.Layout.footerFadeHeight <= Tokens.Platform.bottomPadding)
     }
 
+    /// The strip spared from the fade is there for the Mac scroller. It must stay inside the side
+    /// padding, or content under it would stop fading. iOS hides the indicator and spares nothing.
+    @Test
+    func scrollerGutterOnlyEverCoversPadding() {
+        #if os(macOS)
+            #expect(Tokens.Platform.scrollerGutter > 0)
+            #expect(Tokens.Platform.scrollerGutter <= Tokens.Layout.regularHorizontalPadding)
+        #else
+            #expect(Tokens.Platform.scrollerGutter == 0)
+        #endif
+    }
+
     @Test
     func footerControlsUseCompactVisualSpacingWithAccessibleSkipHeight() {
         #expect(Tokens.Layout.footerControlSpacing == Tokens.Spacing.medium)

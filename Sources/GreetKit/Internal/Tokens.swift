@@ -81,6 +81,9 @@ enum Tokens {
             static let sheetIdealHeight: CGFloat = 520
             /// A pointer target, not a touch target.
             static let minimumControlHeight: CGFloat = 28
+            /// Kept out of the footer fade so the scroller does not fade with the content.
+            /// Narrower than `Layout.regularHorizontalPadding`, so it only ever covers padding.
+            static let scrollerGutter: CGFloat = 16
         #else
             static let iconSize: CGFloat = 100
             static let featureIconSize: CGFloat = 35
@@ -89,6 +92,8 @@ enum Tokens {
             static let topPadding: CGFloat = 32
             static let bottomPadding: CGFloat = 24
             static let minimumControlHeight: CGFloat = 44
+            /// iOS hides the scroll indicator, so there is nothing to spare from the fade.
+            static let scrollerGutter: CGFloat = 0
         #endif
     }
 
