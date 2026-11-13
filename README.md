@@ -1,14 +1,10 @@
 # GreetKit
 
-[![CI](https://github.com/hksw-io/GreetKit/actions/workflows/ci.yml/badge.svg)](https://github.com/hksw-io/GreetKit/actions/workflows/ci.yml)
+[![CI](https://github.com/hksw-io/greetkit/actions/workflows/ci.yml/badge.svg)](https://github.com/hksw-io/greetkit/actions/workflows/ci.yml)
 
 A reusable SwiftUI welcome sheet for iOS and macOS apps in the HK Softworks portfolio.
 
 Pure SwiftUI — the consumer owns state (loading, error, dismissal). Works with any state management approach (TCA, `@Observable`, `@State`).
-
-The package and import name is `GreetKit`. Public view and content APIs intentionally use the
-domain language `Greet...`, for example `GreetView`, `GreetContent`, and
-`GreetPage`.
 
 ## Preview
 
@@ -41,12 +37,13 @@ reveal travel are all scaled for the desktop.
 ## Installation
 
 ```swift
-.package(url: "https://github.com/hksw-io/GreetKit.git", from: "3.2.0")
+.package(url: "https://github.com/hksw-io/greetkit.git", exact: "3.2.0")
 ```
 
-Or in Xcode: **File > Add Package Dependencies**, enter the URL above, and choose **Up to Next Major Version** from `3.2.0`.
+Or in Xcode: **File > Add Package Dependencies**, enter the URL above, and choose **Exact Version** `3.2.0`.
 
-See [CHANGELOG.md](CHANGELOG.md) for what changed between releases.
+See [CHANGELOG.md](CHANGELOG.md) for what changed between releases. A minor release may contain a
+breaking change, marked **Breaking** there, so pin an exact version.
 
 ## Usage
 
@@ -210,13 +207,6 @@ The gradient is drawn edge to edge: behind the pinned footer and, in a full-scre
 
 Without `brand:` the gradient is blue. It cannot read the tint or the app's accent color, so pass `brand:` when it should match the controls. The supporting tones are derived from that one color — washed toward the platform surface, which lifts them in light mode and deepens them in dark.
 
-<p>
-  <img src="Docs/Media/greetkit-ios-soft-light.jpg" width="240" alt="The soft gradient background on iPhone in light mode.">
-  <img src="Docs/Media/greetkit-ios-soft-dark.jpg" width="240" alt="The same soft gradient background on iPhone in dark mode, deeper and less washed out.">
-</p>
-
-The same `.softGradient` and the same brand color in both schemes.
-
 GreetKit pins the footer with `safeAreaBar(edge:)` and fades overflowing content out just above it. The platform's scroll edge effect is hidden there: its hard style draws a dividing line even when nothing scrolls under the footer, and its soft style lets text run under the footer's own text.
 
 ## Tint
@@ -282,21 +272,8 @@ The iOS build path is not covered by `swift test`, so check it too when touching
 xcodebuild -scheme GreetKit -destination 'generic/platform=iOS' build
 ```
 
-CI runs `swift test` and the test suite on an iOS Simulator (`xcodebuild test`) with Xcode 27.0,
-on every push to `master` and every pull request.
-
 The README media was captured from the iOS 27.2 Simulator (iPhone 17 Pro, iPad Pro 11-inch)
 and a macOS window.
-
-## OS 27 compatibility
-
-The deployment minimum remains iOS 26 / macOS 26, with Swift tools 6.2. CI runs package tests
-on macOS and iOS Simulator with the Xcode 27.0 image, which GitHub maintains as
-[`xcode-27`](https://github.com/actions/runner-images/issues/14404). The job selects its
-toolchain and runtime generation explicitly. Nothing in CI builds with an Xcode 26 toolchain or
-runs on an OS 26 runtime any more, so new SDK-only APIs must be checked against the deployment
-minimum by hand. Local SDK 27.2 validation complements the job; a local pass does not establish
-the result of a hosted CI run.
 
 ## License
 

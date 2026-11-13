@@ -45,4 +45,5 @@ Instructions for agents working in this repository. RFC 2119 keywords apply.
 - Use Context7 for current, version-specific documentation for non-Apple libraries.
 - Keep README examples aligned with public APIs whenever API behavior changes.
 - Record every public API or behavior change under `## [Unreleased]` in `CHANGELOG.md`.
+- A minor release may contain a breaking change, marked **Breaking** in `CHANGELOG.md`, so consumers pin exact versions.
 - Use semantic commit messages when committing changes, such as `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, or `chore:`.
