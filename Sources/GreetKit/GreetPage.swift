@@ -96,7 +96,7 @@ public struct GreetPage<Content: View, Footer: View>: View {
         .scrollEdgeEffectHidden(true, for: .bottom)
         .greetSheetSizing()
         .background {
-            GreetBackgroundView(background: self.background)
+            GreetBackgroundView(background: self.background, settlesIntoGroupedSurface: true)
         }
     }
 

@@ -60,5 +60,76 @@ struct GradientTests {
         #expect(red.secondary != Color.cyan)
         #expect(red.accent != Color.mint)
     }
+
+    @Test
+    func meshKeepsItsColoursInOrderAndDefaultsToCyanBlueAndIndigo() {
+        let given = Self.meshColors(.mesh(leading: .red, center: .green, trailing: .orange))
+        let standard = Self.meshColors(.mesh)
+
+        #expect(given?.leading == .red)
+        #expect(given?.center == .green)
+        #expect(given?.trailing == .orange)
+        #expect(standard?.leading == .cyan)
+        #expect(standard?.center == .blue)
+        #expect(standard?.trailing == .indigo)
+    }
+
+    @Test
+    func meshKeepsMoreColourInDarkModeThanInLight() {
+        let light = GreetMeshTuning.standard(colorScheme: .light)
+        let dark = GreetMeshTuning.standard(colorScheme: .dark)
+
+        #expect(dark.topStrength > light.topStrength)
+        #expect(dark.middleStrength > light.middleStrength)
+        #expect(light.middleStrength < light.topStrength)
+    }
+
+    /// The same rule as the soft gradient: either setting damps the colour, so text below the
+    /// title never depends on where the colour sits.
+    @Test
+    func meshDampsItsColourWhenAFlatBackgroundIsPreferred() {
+        let standard = GreetMeshTuning.standard(colorScheme: .light)
+        let damped = standard.damped(by: GreetGradientDamping(reduceTransparency: false, increaseContrast: true))
+
+        #expect(damped.topStrength < standard.topStrength)
+        #expect(damped.middleStrength < standard.middleStrength)
+        #expect(standard.damped(by: .none) == standard)
+    }
+
+    /// The mesh is drawn edge to edge, so its outer points have to sit on the edges, and the bottom
+    /// row is the surface itself.
+    @Test
+    func meshPointsSpanTheWholeSurface() {
+        let points = GreetMeshTuning.points
+
+        #expect(points.count == 9)
+        #expect(points[0...2].allSatisfy { $0.y == 0 })
+        #expect(points[6...8].allSatisfy { $0.y == 1 })
+        #expect([points[0], points[3], points[6]].allSatisfy { $0.x == 0 })
+        #expect([points[2], points[5], points[8]].allSatisfy { $0.x == 1 })
+    }
+
+    #if os(macOS)
+        /// Hosting runs the body, which construction alone does not, on both surfaces the mesh
+        /// settles into.
+        @Test
+        @MainActor
+        func meshDrawsOnTheWelcomeAndOnAPage() {
+            for grouped in [false, true] {
+                let host = NSHostingView(rootView: GreetBackgroundView(
+                    background: .mesh,
+                    settlesIntoGroupedSurface: grouped)
+                    .frame(width: 200, height: 300))
+                host.layoutSubtreeIfNeeded()
+
+                #expect(host.fittingSize == CGSize(width: 200, height: 300))
+            }
+        }
+    #endif
+
+    private static func meshColors(_ background: GreetBackground) -> GreetMeshColors? {
+        guard case let .mesh(colors) = background.storage else { return nil }
+        return colors
+    }
 }
 #endif

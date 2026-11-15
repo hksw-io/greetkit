@@ -202,6 +202,14 @@ Built-in options:
 
 - `.system` — the default. Draws nothing, so the presentation's own surface shows through: a sheet keeps the material the platform gives it.
 - `.softGradient` / `.softGradient(brand:)` — a restrained brand-derived background tuned for readable first-run content.
+- `.mesh` / `.mesh(leading:center:trailing:)` — three colors along the top edge in a mesh that settles into the platform surface below the title. Without arguments it is cyan, blue, and indigo.
+
+```swift
+GreetView(content: MyGreet(), onPrimary: {})
+    .greetBackground(.mesh(leading: .teal, center: .blue, trailing: .purple))
+```
+
+The mesh keeps a third of each color over the surface in light mode and a little more in dark mode, where a dark surface swallows color faster. The row below the top carries a softer echo of the colors, and the bottom row is the surface itself, so the feature rows and the footer sit on the plain platform color. On a `GreetPage` it settles into the grouped surface instead, the one an inset `Form` sits on.
 
 The gradient is drawn edge to edge: behind the pinned footer and, in a full-screen presentation, through the safe areas to the screen edges. Scroll indicators are hidden on iOS, where a swipe and the fade above the footer already say the content continues, and left to the system on macOS, where the scroller is how a window tells you there is more below.
 
@@ -254,7 +262,7 @@ Every text role scales with Dynamic Type, and the icons, spacing, and content pa
 through `@ScaledMetric`. At accessibility sizes the content scrolls and fades out above the pinned
 footer rather than compressing, so the primary and skip buttons stay reachable at any type size.
 
-The gradient background flattens itself under Reduce Transparency or Increase Contrast: the color wash is damped and more of the opaque base shows, so text contrast no longer depends on where the color happens to sit.
+The gradient and mesh backgrounds flatten themselves under Reduce Transparency or Increase Contrast: the color is damped and more of the opaque base shows, so text contrast no longer depends on where the color happens to sit.
 
 Return triggers the primary action. Escape triggers the skip action, but only when `skipButtonText` is non-nil and `allowsInteractiveDismissal` is `true` — a blocking setup flow stays blocked, and Escape never fires `onSkip` when there is no skip button on screen.
 

@@ -107,5 +107,14 @@ enum Tokens {
             Color(.systemBackground)
         #endif
     }
+
+    /// The surface an inset grouped form sits on.
+    static var groupedBackground: Color {
+        #if os(macOS)
+            Color(.windowBackgroundColor)
+        #else
+            Color(.systemGroupedBackground)
+        #endif
+    }
 }
 #endif

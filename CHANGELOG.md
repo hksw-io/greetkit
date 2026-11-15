@@ -6,6 +6,15 @@ may contain a breaking change, marked **Breaking**, so pin an exact version.
 
 ## [Unreleased]
 
+### Added
+
+- `.mesh` and `mesh(leading:center:trailing:)`, a background that spreads three colours along the top
+  edge, in a mesh that falls off unevenly and settles into the platform surface below the title.
+  Without arguments it is cyan, blue, and indigo. Dark mode keeps more of the colour, and Reduce
+  Transparency or Increase Contrast damps it, as they do the soft gradient. On a `GreetPage` the
+  mesh settles into the grouped surface an inset `Form` sits on, so the form's rows stand out
+  below it; on a `GreetView` it settles into the plain surface. `.softGradient` is unchanged.
+
 ## [3.2.0] - 2026-11-12
 
 ### Added
