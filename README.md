@@ -37,10 +37,10 @@ reveal travel are all scaled for the desktop.
 ## Installation
 
 ```swift
-.package(url: "https://github.com/hksw-io/greetkit.git", exact: "3.2.0")
+.package(url: "https://github.com/hksw-io/greetkit.git", exact: "3.3.0")
 ```
 
-Or in Xcode: **File > Add Package Dependencies**, enter the URL above, and choose **Exact Version** `3.2.0`.
+Or in Xcode: **File > Add Package Dependencies**, enter the URL above, and choose **Exact Version** `3.3.0`.
 
 See [CHANGELOG.md](CHANGELOG.md) for what changed between releases. A minor release may contain a
 breaking change, marked **Breaking** there, so pin an exact version.

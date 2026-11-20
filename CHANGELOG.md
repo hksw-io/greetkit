@@ -6,6 +6,8 @@ may contain a breaking change, marked **Breaking**, so pin an exact version.
 
 ## [Unreleased]
 
+## [3.3.0] - 2026-11-20
+
 ### Added
 
 - `.mesh` and `mesh(leading:center:trailing:)`, a background that spreads three colours along the top
@@ -319,7 +321,8 @@ First tagged release. Everything before this tag was consumed from the `master` 
   Both were already marked deprecated and are removed here rather than after 1.0.0, since no tagged
   release ever shipped them.
 
-[unreleased]: https://github.com/hksw-io/GreetKit/compare/3.2.0...HEAD
+[unreleased]: https://github.com/hksw-io/GreetKit/compare/3.3.0...HEAD
+[3.3.0]: https://github.com/hksw-io/GreetKit/compare/3.2.0...3.3.0
 [3.2.0]: https://github.com/hksw-io/GreetKit/compare/3.1.0...3.2.0
 [3.1.0]: https://github.com/hksw-io/GreetKit/compare/3.0.0...3.1.0
 [3.0.0]: https://github.com/hksw-io/GreetKit/compare/2.0.1...3.0.0
